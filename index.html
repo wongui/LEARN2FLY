@@ -1,0 +1,934 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="mobile-web-app-capable" content="yes"/>
+<meta name="theme-color" content="#6d3fd0"/>
+<title>Learn 2 Fly — Vuela y aprende</title>
+<meta name="description" content="Un juego para niños: vuela por 3 mundos, junta estrellas y aprende sobre arte, espacio y biología. En español e inglés."/>
+
+<!-- ⚠️ REEMPLAZA "USUARIO" por tu usuario/dominio real (ver README.md) -->
+<meta property="og:url" content="https://USUARIO.github.io/learn2fly/"/>
+<meta property="og:type" content="website"/>
+<meta property="og:title" content="Learn 2 Fly — Vuela y aprende"/>
+<meta property="og:description" content="Vuela por 3 mundos, junta estrellas y aprende arte, espacio y biología. ¡Para niños, en español e inglés!"/>
+<meta property="og:image" content="https://USUARIO.github.io/learn2fly/og-image.png"/>
+<meta property="og:image:width" content="1200"/>
+<meta property="og:image:height" content="800"/>
+<meta property="og:locale" content="es_ES"/>
+
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:title" content="Learn 2 Fly — Vuela y aprende"/>
+<meta name="twitter:description" content="Vuela, junta estrellas y aprende arte, espacio y biología."/>
+<meta name="twitter:image" content="https://USUARIO.github.io/learn2fly/og-image.png"/>
+
+<link rel="icon" href="favicon.png" type="image/png"/>
+<link rel="apple-touch-icon" href="apple-touch-icon.png"/>
+<link rel="manifest" href="manifest.json"/>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{height:100%;overflow:hidden;overscroll-behavior:none;background:#000;font-family:ui-rounded,"SF Pro Rounded",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;color:#fff;}
+  #app{position:fixed;inset:0;touch-action:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;} canvas{display:block;}
+  #vig{position:fixed;inset:0;pointer-events:none;box-shadow:inset 0 0 200px 50px rgba(0,0,0,.32);z-index:1;}
+  .hidden{display:none !important;}
+  .center{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:26px;z-index:6;}
+  .scrim{background:rgba(10,10,16,.6);backdrop-filter:blur(3px);}
+  .btn{pointer-events:auto;cursor:pointer;border:none;border-radius:16px;padding:15px 32px;font-size:17px;font-weight:800;background:#fff;color:#141414;box-shadow:0 8px 30px rgba(0,0,0,.4);}
+  .btn.ghost{background:transparent;color:#fff;border:2px solid rgba(255,255,255,.5);box-shadow:none;}
+  .row{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;}
+
+  /* Menu */
+  #menuUI{position:fixed;inset:0;z-index:5;pointer-events:none;}
+  #menuUI::before{content:"";position:fixed;top:0;left:0;right:0;height:210px;z-index:-1;pointer-events:none;
+    background:linear-gradient(180deg,rgba(6,7,14,.58) 0%,rgba(6,7,14,.34) 45%,rgba(6,7,14,0) 100%);}
+  #menuHead{position:fixed;top:78px;left:0;right:0;display:flex;flex-direction:column;align-items:center;gap:6px;padding:0 20px;pointer-events:none;}
+  #kick{text-align:center;font-size:11px;letter-spacing:3px;text-transform:uppercase;opacity:.75;}
+  #title{text-align:center;font-size:46px;font-weight:900;line-height:1.02;letter-spacing:-1px;text-shadow:0 2px 4px rgba(0,0,0,.55),0 4px 22px rgba(0,0,0,.55);}
+  #learn{text-align:center;font-size:14px;opacity:.92;max-width:520px;text-shadow:0 1px 3px rgba(0,0,0,.6),0 2px 12px rgba(0,0,0,.55);}
+  #tabs{position:fixed;left:0;right:0;bottom:92px;display:flex;justify-content:center;padding:0 12px;}
+  .tab{pointer-events:auto;cursor:pointer;display:flex;align-items:center;gap:7px;border:1.5px solid rgba(255,255,255,.28);background:rgba(255,255,255,.1);backdrop-filter:blur(10px);color:#fff;border-radius:999px;padding:10px 16px;font-size:14px;font-weight:700;}
+  .tab .dot{width:11px;height:11px;border-radius:50%;}
+  .tab.on{background:#fff;color:#111;border-color:#fff;}
+  #startBtn{position:fixed;left:50%;transform:translateX(-50%);bottom:26px;pointer-events:auto;z-index:5;}
+
+  /* HUD */
+  #hud{position:fixed;top:0;left:0;right:0;padding:14px 16px;display:flex;align-items:center;gap:12px;z-index:4;pointer-events:none;}
+  #hearts{font-size:18px;font-weight:800;letter-spacing:2px;min-width:56px;text-align:center;text-shadow:0 1px 3px rgba(0,0,0,.5);}
+  #levelTag{font-size:14px;font-weight:800;white-space:nowrap;text-shadow:0 1px 3px rgba(0,0,0,.5);}
+  #bar{flex:1;height:11px;background:rgba(255,255,255,.25);border-radius:6px;overflow:hidden;}
+  #barfill{height:100%;width:0%;background:#fff;transition:width .1s linear;}
+  #score{font-size:16px;font-weight:800;min-width:56px;text-align:right;text-shadow:0 1px 3px rgba(0,0,0,.5);}
+  .ic{font-size:17px;color:#ffd23f;vertical-align:-1px;text-shadow:0 0 8px rgba(255,205,80,.75);}
+
+  /* Question */
+  #starline{font-size:17px;font-weight:700;opacity:.9;}
+  #question{font-size:33px;font-weight:900;line-height:1.2;max-width:480px;margin:10px 12px;text-shadow:0 2px 12px rgba(0,0,0,.45);}
+  #answers{display:flex;flex-direction:column;gap:12px;width:100%;max-width:360px;}
+  .qbtn{pointer-events:auto;cursor:pointer;border:2px solid rgba(255,255,255,.4);background:rgba(255,255,255,.12);color:#fff;border-radius:14px;padding:18px;font-size:18px;font-weight:700;width:100%;transition:all .15s;}
+  .qbtn.correct{border-color:#7ee08a;background:#1f3a24;color:#d6f7db;}
+  .qbtn.wrong{border-color:#e08a8a;background:#3a1f1f;color:#f7d6d6;}
+  .qbtn:disabled{cursor:default;}
+  #feedback{max-width:420px;font-size:16px;line-height:1.5;padding:14px 16px;border-radius:14px;margin-top:6px;}
+  #feedback.good{background:#1f3a24;color:#d6f7db;} #feedback.bad{background:#3a1f1f;color:#f7d6d6;}
+  #feedback .big{font-size:19px;font-weight:800;display:block;margin-bottom:4px;}
+  #feedback .pts{margin-top:10px;font-weight:700;opacity:.9;}
+  #total{position:fixed;top:16px;right:16px;z-index:7;background:rgba(0,0,0,.45);border:1px solid rgba(255,255,255,.25);border-radius:999px;padding:8px 14px;font-size:14px;font-weight:800;backdrop-filter:blur(8px);pointer-events:none;}
+
+  /* ===== Liquid glass UI ===== */
+  .btn,.btn.ghost,.tab,.qbtn,#total,#hud #bar,#barfill,#score,#hearts,#feedback{
+    -webkit-backdrop-filter:blur(16px) saturate(1.5);backdrop-filter:blur(16px) saturate(1.5);
+  }
+  .btn{background:linear-gradient(180deg,rgba(255,255,255,.6),rgba(255,255,255,.3));color:#141414;border:1px solid rgba(255,255,255,.7);border-radius:18px;
+    box-shadow:0 10px 28px rgba(0,0,0,.28),inset 0 1px 0 rgba(255,255,255,.95),inset 0 -10px 20px rgba(255,255,255,.12);}
+  .btn.ghost{background:linear-gradient(180deg,rgba(255,255,255,.22),rgba(255,255,255,.08));color:#fff;border:1px solid rgba(255,255,255,.5);
+    box-shadow:0 8px 22px rgba(0,0,0,.25),inset 0 1px 0 rgba(255,255,255,.6);}
+  .tab{background:linear-gradient(180deg,rgba(255,255,255,.22),rgba(255,255,255,.07));border:1px solid rgba(255,255,255,.42);color:#fff;
+    box-shadow:0 6px 18px rgba(0,0,0,.25),inset 0 1px 0 rgba(255,255,255,.55);}
+  .tab.on{background:linear-gradient(180deg,rgba(255,255,255,.9),rgba(255,255,255,.62));color:#141414;border-color:rgba(255,255,255,.95);
+    box-shadow:0 8px 22px rgba(0,0,0,.28),inset 0 1px 0 rgba(255,255,255,.95);}
+  .qbtn{background:linear-gradient(180deg,rgba(255,255,255,.2),rgba(255,255,255,.06));border:1px solid rgba(255,255,255,.42);color:#fff;
+    box-shadow:0 6px 18px rgba(0,0,0,.22),inset 0 1px 0 rgba(255,255,255,.55);}
+  .qbtn.correct{background:linear-gradient(180deg,rgba(130,230,145,.45),rgba(40,110,60,.4));border-color:rgba(160,245,170,.85);color:#eafff0;
+    box-shadow:0 6px 20px rgba(30,110,55,.32),inset 0 1px 0 rgba(255,255,255,.7);}
+  .qbtn.wrong{background:linear-gradient(180deg,rgba(230,140,140,.45),rgba(110,40,40,.4));border-color:rgba(245,160,160,.85);color:#ffeaea;
+    box-shadow:0 6px 20px rgba(110,40,40,.32),inset 0 1px 0 rgba(255,255,255,.7);}
+  #total{background:linear-gradient(180deg,rgba(255,255,255,.22),rgba(255,255,255,.08));border:1px solid rgba(255,255,255,.5);color:#fff;
+    box-shadow:0 6px 16px rgba(0,0,0,.25),inset 0 1px 0 rgba(255,255,255,.6);}
+  #hud #bar{background:linear-gradient(180deg,rgba(255,255,255,.24),rgba(255,255,255,.1));border:1px solid rgba(255,255,255,.4);
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.55),0 2px 10px rgba(0,0,0,.2);}
+  #barfill{background:linear-gradient(180deg,rgba(255,255,255,.98),rgba(255,255,255,.72));box-shadow:0 0 12px rgba(255,255,255,.55);}
+  #hearts,#score,#levelTag{padding:7px 13px;border-radius:999px;background:linear-gradient(180deg,rgba(255,255,255,.18),rgba(255,255,255,.06));
+    border:1px solid rgba(255,255,255,.35);box-shadow:inset 0 1px 0 rgba(255,255,255,.55),0 4px 12px rgba(0,0,0,.18);}
+  #feedback{box-shadow:0 10px 26px rgba(0,0,0,.32),inset 0 1px 0 rgba(255,255,255,.45);border:1px solid rgba(255,255,255,.3);}
+  #feedback.good{background:linear-gradient(180deg,rgba(130,230,145,.32),rgba(30,80,50,.55));}
+  #feedback.bad{background:linear-gradient(180deg,rgba(230,140,140,.32),rgba(80,35,35,.55));}
+
+  /* ===== Accessibility: tap targets + keyboard focus only (no visual restyle) ===== */
+  .btn,.tab,.qbtn{min-height:44px;}
+  .tab{padding:12px 16px;}
+  .btn:focus-visible,.tab:focus-visible,.qbtn:focus-visible{
+    outline:3px solid #fff;outline-offset:3px;box-shadow:0 0 0 6px rgba(0,0,0,.55);
+  }
+  @media (prefers-reduced-motion: reduce){ .btn,.tab,.qbtn{transition:none;} }
+  /* ===== Segmented selector (shared: language toggle + topic picker) ===== */
+  #langtog{position:fixed;top:14px;left:14px;z-index:7;}
+  .seg{position:relative;display:inline-flex;padding:5px;border-radius:999px;pointer-events:auto;
+    background:linear-gradient(180deg,rgba(255,255,255,.22),rgba(255,255,255,.08));
+    border:1px solid rgba(255,255,255,.5);
+    -webkit-backdrop-filter:blur(16px) saturate(1.5);backdrop-filter:blur(16px) saturate(1.5);
+    box-shadow:0 6px 16px rgba(0,0,0,.25),inset 0 1px 0 rgba(255,255,255,.6);}
+  .seg .knob{position:absolute;top:5px;bottom:5px;left:5px;width:60px;border-radius:999px;pointer-events:none;
+    background:linear-gradient(180deg,rgba(255,255,255,.95),rgba(255,255,255,.72));
+    box-shadow:0 2px 8px rgba(0,0,0,.24),inset 0 1px 0 rgba(255,255,255,.95);
+    transition:left .28s cubic-bezier(.4,0,.2,1),width .28s cubic-bezier(.4,0,.2,1);}
+  .seg button{position:relative;z-index:1;flex:0 0 auto;display:flex;align-items:center;justify-content:center;gap:8px;
+    background:none;border:none;cursor:pointer;white-space:nowrap;border-radius:999px;
+    color:#fff;font-weight:800;font-size:16px;padding:8px 18px;min-height:0;
+    text-shadow:0 1px 2px rgba(0,0,0,.35);transition:color .2s;}
+  .seg button.on{color:#141414;text-shadow:none;}
+  .seg .dot{width:12px;height:12px;border-radius:50%;flex:none;}
+  .seg button:focus-visible{outline:3px solid #fff;outline-offset:3px;}
+  @media (prefers-reduced-motion: reduce){ .seg .knob{transition:none;} }
+  /* ===== Consistent liquid-glass components (one recipe everywhere) ===== */
+  .scrim{background:rgba(14,16,24,.42);-webkit-backdrop-filter:blur(22px) saturate(1.3);backdrop-filter:blur(22px) saturate(1.3);}
+  .btn.ghost,.tab,.qbtn{
+    background:linear-gradient(180deg,rgba(255,255,255,.3),rgba(255,255,255,.15));
+    border:1px solid rgba(255,255,255,.55);color:#fff;
+    box-shadow:0 6px 18px rgba(0,0,0,.18),inset 0 1px 0 rgba(255,255,255,.78);}
+  .qbtn.correct{background:linear-gradient(180deg,#3ee88f,#15b869);border-color:#0b6b3f;color:#04240f;font-weight:800;box-shadow:0 6px 18px rgba(20,190,110,.5),inset 0 1px 0 rgba(255,255,255,.5);}
+  .qbtn.wrong{background:linear-gradient(180deg,#ff7676,#e23a3a);border-color:#7c1717;color:#360606;font-weight:800;box-shadow:0 6px 18px rgba(225,60,60,.45),inset 0 1px 0 rgba(255,255,255,.4);}
+  #feedback{border:2px solid rgba(255,255,255,.55);box-shadow:0 12px 30px rgba(0,0,0,.3),inset 0 1px 0 rgba(255,255,255,.6);}
+  #feedback.good{background:linear-gradient(180deg,#37e28f,#12ab63);color:#052a16;border-color:#8dffc0;box-shadow:0 14px 34px rgba(20,190,110,.55),inset 0 1px 0 rgba(255,255,255,.7);animation:fbPop .42s ease-out;}
+  #feedback.bad{background:linear-gradient(180deg,#ff6f6f,#e13636);color:#340606;border-color:#ffc2c2;box-shadow:0 14px 34px rgba(225,55,55,.5),inset 0 1px 0 rgba(255,255,255,.55);animation:fbShake .4s ease-out;}
+  #feedback.good .big,#feedback.bad .big{color:inherit;}
+  @keyframes fbPop{0%{transform:scale(.82);}55%{transform:scale(1.05);}100%{transform:scale(1);}}
+  @keyframes fbShake{0%,100%{transform:translateX(0);}20%{transform:translateX(-7px);}40%{transform:translateX(7px);}60%{transform:translateX(-5px);}80%{transform:translateX(5px);}}
+  #sparkles{position:absolute;inset:0;pointer-events:none;overflow:visible;z-index:6;}
+  .sparkle{position:absolute;left:50%;top:46%;will-change:transform,opacity;animation:sparkleFly .95s ease-out forwards;text-shadow:0 0 10px rgba(255,230,140,.9);}
+  @keyframes sparkleFly{0%{transform:translate(-50%,-50%) scale(.2) rotate(0);opacity:0;}15%{opacity:1;}100%{transform:translate(-50%,-50%) translate(var(--dx),var(--dy)) scale(1.15) rotate(var(--rot));opacity:0;}}
+  @media (prefers-reduced-motion: reduce){ #feedback.good,#feedback.bad{animation:none;} .sparkle{display:none;} }
+
+  /* ===== Interaction states: hover on pointer devices, press feedback everywhere ===== */
+  .btn,.seg button{transition:transform .15s ease,box-shadow .15s ease,background .15s ease,border-color .15s ease,color .2s ease,filter .15s ease;}
+  @media (hover:hover){
+    .btn:hover{transform:translateY(-2px);filter:brightness(1.05);box-shadow:0 14px 34px rgba(0,0,0,.34),inset 0 1px 0 rgba(255,255,255,.95),inset 0 -10px 20px rgba(255,255,255,.14);}
+    #startBtn:hover{transform:translateX(-50%) translateY(-2px);}
+    .btn.ghost:hover{background:linear-gradient(180deg,rgba(255,255,255,.34),rgba(255,255,255,.16));border-color:rgba(255,255,255,.78);}
+    .qbtn:not(:disabled):hover{transform:translateY(-2px);background:linear-gradient(180deg,rgba(255,255,255,.32),rgba(255,255,255,.14));border-color:rgba(255,255,255,.72);box-shadow:0 12px 28px rgba(0,0,0,.28),inset 0 1px 0 rgba(255,255,255,.7);}
+    .seg button:not(.on):hover{color:#fff;background:rgba(255,255,255,.16);}
+  }
+  .btn:active{transform:translateY(1px) scale(.985);filter:brightness(.97);box-shadow:0 6px 16px rgba(0,0,0,.3);}
+  #startBtn:active{transform:translateX(-50%) translateY(1px) scale(.985);}
+  .qbtn:not(:disabled):active{transform:scale(.98);}
+  .seg button:not(.on):active{transform:scale(.95);}
+  @media (prefers-reduced-motion: reduce){
+    .btn:hover,.qbtn:hover,.seg button:hover,.btn:active,.qbtn:active,.seg button:active{transform:none;}
+    #startBtn:hover,#startBtn:active{transform:translateX(-50%);}
+  }
+</style>
+</head>
+<body>
+<div id="app"></div><div id="vig"></div>
+<div id="total" role="status" aria-live="polite" aria-label="Total points 0"><span class="ic">★</span> 0</div>
+<div id="langtog" class="seg"><span class="knob" aria-hidden="true"></span><button data-l="en">English</button><button data-l="es" class="on">Español</button></div>
+
+<!-- MENU -->
+<div id="menuUI">
+  <div id="menuHead">
+    <div id="kick">Pick your world</div>
+    <div id="title">Art</div>
+    <div id="learn">You'll learn about colors, artists, and how art is made.</div>
+  </div>
+</div>
+<div id="tabs">
+  <div id="topicSeg" class="seg" role="group" aria-label="Choose a world">
+    <span class="knob" aria-hidden="true"></span>
+    <button class="on" data-t="art"><span aria-hidden="true" class="dot" style="background:#ff5ca8"></span><span class="lbl">Art</span></button>
+    <button data-t="planets"><span aria-hidden="true" class="dot" style="background:#8b5cf6"></span><span class="lbl">Space</span></button>
+    <button data-t="biology"><span aria-hidden="true" class="dot" style="background:#ff8c42"></span><span class="lbl">Biology</span></button>
+  </div>
+</div>
+<button id="startBtn" class="btn">Start</button>
+
+
+<!-- HUD -->
+<div id="hud" class="hidden">
+  <div id="levelTag">Lv 1</div>
+  <div id="hearts" role="img" aria-label="Lives: 3">♥♥♥</div>
+  <div id="bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-label="Level progress"><div id="barfill"></div></div>
+  <div id="score" aria-label="Points this run: 0"><span class="ic">★</span> 0</div>
+</div>
+
+<!-- QUESTION -->
+<div id="quiz" class="center scrim hidden">
+  <div id="sparkles"></div>
+  <div id="quizTag" style="font-size:12px;letter-spacing:2px;text-transform:uppercase;opacity:.7;">Level clear</div>
+  <div id="starline">You collected 0 ★</div>
+  <div id="question">—</div>
+  <div id="answers"></div>
+  <div id="feedback" class="hidden"></div>
+  <div class="row" style="margin-top:18px;">
+    <button id="again" class="btn hidden">Play again</button>
+    <button id="toMenu" class="btn ghost hidden">Change world</button>
+  </div>
+</div>
+
+<script type="importmap">
+{ "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js" } }
+</script>
+<script type="module">
+import * as THREE from 'three';
+
+/* ===== Juan's character builders (verbatim) ===== */
+// A soft, slightly glossy "toy plastic" material — realistic light, cute feel.
+function toy(color, opts = {}) {
+  return new THREE.MeshStandardMaterial({
+    color, roughness: opts.roughness ?? 0.55, metalness: opts.metalness ?? 0.0,
+    emissive: opts.emissive ?? 0x000000, emissiveIntensity: opts.emissiveIntensity ?? 1,
+    ...opts.extra
+  });
+}
+
+// One shared eye look for cohesion: glossy dark dome + white catchlight.
+function makeEye(radius = 0.16) {
+  const g = new THREE.Group();
+  const ball = new THREE.Mesh(
+    new THREE.SphereGeometry(radius, 32, 32),
+    new THREE.MeshStandardMaterial({ color: 0x1a1c22, roughness: 0.15, metalness: 0.1 })
+  );
+  const spark = new THREE.Mesh(
+    new THREE.SphereGeometry(radius * 0.32, 16, 16),
+    new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.2, emissive: 0xffffff, emissiveIntensity: 0.4 })
+  );
+  spark.position.set(radius * 0.35, radius * 0.35, radius * 0.72);
+  g.add(ball, spark);
+  return g;
+}
+
+/* ============================================================
+   1) BUTTERFLY  (Art)  — wings flap, body bobs
+   ============================================================ */
+function buildButterfly() {
+  const root = new THREE.Group();
+  const body = new THREE.Group();
+  root.add(body);
+
+  const beige = toy(0xe8d3a8, { roughness: 0.62 });   // warm beige
+  const brown = toy(0x8a5a3a, { roughness: 0.62 });   // brown
+
+  // Stacked body: beige head + abdomen, brown thorax and abdomen tip.
+  const head = new THREE.Mesh(new THREE.SphereGeometry(0.42, 32, 32), beige);
+  head.position.y = 0.55;
+  const thorax = new THREE.Mesh(new THREE.SphereGeometry(0.34, 32, 32), brown);
+  const abdomen = new THREE.Mesh(new THREE.SphereGeometry(0.26, 32, 32), beige);
+  abdomen.position.y = -0.5; abdomen.scale.y = 1.5;
+  const abTip = new THREE.Mesh(new THREE.SphereGeometry(0.2, 24, 24), brown);
+  abTip.position.y = -0.92;
+  body.add(head, thorax, abdomen, abTip);
+
+  // Big eyes
+  const eyeL = makeEye(0.24), eyeR = makeEye(0.24);
+  eyeL.position.set(-0.19, 0.58, 0.32);
+  eyeR.position.set(0.19, 0.58, 0.32);
+  body.add(eyeL, eyeR);
+
+  // Antennae: rooted on top of the head, splayed out with club tips
+  for (const s of [-1, 1]) {
+    const ant = new THREE.Group();
+    const len = 0.55;
+    const stalk = new THREE.Mesh(new THREE.CylinderGeometry(0.022, 0.03, len, 10),
+      toy(0x6b4a30, { roughness: 0.6 }));
+    stalk.position.y = len / 2;                       // base sits at the group origin
+    const tip = new THREE.Mesh(new THREE.SphereGeometry(0.07, 14, 14), toy(0x6b4a30));
+    tip.position.y = len;                             // club tip at the end
+    ant.add(stalk, tip);
+    ant.position.set(s * 0.14, 0.92, 0.16);
+    ant.rotation.z = -s * 0.35;                       // splay outward, no crossing
+    ant.rotation.x = -0.3;                            // lean forward
+    body.add(ant);
+  }
+
+  // --- Wings ---
+  // Build a wing silhouette once; reuse for upper + lower, mirrored per side.
+  function wingShape(w, h) {
+    const s = new THREE.Shape();
+    s.moveTo(0, 0);
+    s.bezierCurveTo(0.1 * w, 0.6 * h, 0.6 * w, 1.0 * h, 1.0 * w, 0.55 * h);
+    s.bezierCurveTo(1.15 * w, 0.2 * h, 0.9 * w, -0.15 * h, 0.5 * w, -0.15 * h);
+    s.bezierCurveTo(0.2 * w, -0.15 * h, 0.05 * w, -0.05 * h, 0, 0);
+    return s;
+  }
+  const wingGeoUpper = new THREE.ExtrudeGeometry(wingShape(1.5, 1.5),
+    { depth: 0.04, bevelEnabled: true, bevelThickness: 0.03, bevelSize: 0.03, bevelSegments: 2 });
+  const wingGeoLower = new THREE.ExtrudeGeometry(wingShape(1.15, 1.05),
+    { depth: 0.04, bevelEnabled: true, bevelThickness: 0.03, bevelSize: 0.03, bevelSegments: 2 });
+
+  const wingMatUpper = toy(0x7b5cff, { roughness: 0.4 });    // vivid violet
+  const wingMatLower = toy(0xff5ca8, { roughness: 0.4 });    // hot pink
+  const wingEdge = toy(0x2a2540, { roughness: 0.5 });        // dark rim
+  const spotMat = toy(0xffd23f, { roughness: 0.45 });        // bright yellow spot
+
+  const wingPivots = [];
+  function addWing(geo, side, yOff, tilt) {
+    const pivot = new THREE.Group();                 // pivot sits at the wing root
+    const wg = new THREE.Group();                    // mirror the whole wing as one unit
+    const colMat = (geo === wingGeoUpper ? wingMatUpper : wingMatLower);
+    const wing = new THREE.Mesh(geo, colMat);
+    const rim = new THREE.Mesh(geo, wingEdge);
+    rim.scale.set(1.08, 1.08, 0.55);                 // larger + thin: dark edge ring on both faces
+    const sy = 0.45 * (geo === wingGeoUpper ? 1 : 0.7);   // dot on the FRONT and BACK face
+    const spotF = new THREE.Mesh(new THREE.CircleGeometry(0.26, 24), spotMat);
+    spotF.position.set(0.95, sy, 0.14);
+    const spotB = new THREE.Mesh(new THREE.CircleGeometry(0.26, 24), spotMat);
+    spotB.position.set(0.95, sy, -0.09); spotB.rotation.y = Math.PI;
+    wg.add(rim, wing, spotF, spotB);
+    wg.scale.x = side;                               // mirror for right side
+    pivot.add(wg);
+    const isUpper = geo === wingGeoUpper;
+    pivot.position.set(side * 0.12, yOff, isUpper ? 0.0 : -0.18);  // violet in front, pink behind
+    pivot.rotation.x = -0.32;                        // incline wings back, clear of the body
+    pivot.userData.side = side;
+    pivot.userData.baseTilt = tilt;
+    body.add(pivot);
+    wingPivots.push(pivot);
+    return pivot;
+  }
+  addWing(wingGeoUpper, -1, 0.32, 0.0);
+  addWing(wingGeoUpper, 1, 0.32, 0.0);
+  addWing(wingGeoLower, -1, -0.5, -0.15);
+  addWing(wingGeoLower, 1, -0.5, -0.15);
+
+  body.rotation.x = 0.65;   // pitch forward so it reads as flying, not hovering
+
+  root.userData.update = (t) => {
+    const sweep = (Math.sin(t * 8) * 0.5 + 0.5) * 1.2;   // 0..1.2, front-to-back
+    wingPivots.forEach((p) => {
+      const side = p.userData.side;
+      p.rotation.y = side * 0.1 + side * sweep;           // sweep toward the back
+    });
+    body.position.y = Math.sin(t * 2.2) * 0.18;      // gentle float bob
+    body.rotation.z = Math.sin(t * 1.4) * 0.05;
+    root.rotation.y = Math.sin(t * 0.5) * 0.15;
+  };
+  return root;
+}
+
+/* ============================================================
+   2) ROBOT  (Space)  — propeller spins, arms sway, grippers open/close
+   ============================================================ */
+function buildRobot() {
+  const root = new THREE.Group();
+  const body = new THREE.Group();
+  root.add(body);
+
+  const white = toy(0xf4f5f7, { roughness: 0.4 });
+  const yellow = toy(0xffc94d, { roughness: 0.45 });
+  const dark = toy(0x23252b, { roughness: 0.35, metalness: 0.2 });
+  const glow = toy(0x45e0d8, { emissive: 0x45e0d8, emissiveIntensity: 1.4, roughness: 0.3 });
+
+  // Head: rounded capsule-ish sphere
+  const head = new THREE.Mesh(new THREE.SphereGeometry(0.6, 40, 40), white);
+  head.position.y = 0.75; head.scale.set(1, 0.92, 0.95);
+  // Visor
+  const visor = new THREE.Mesh(new THREE.SphereGeometry(0.5, 40, 40, 0, Math.PI * 2, 0, Math.PI * 0.55), dark);
+  visor.position.set(0, 0.8, 0.16); visor.rotation.x = 0.35; visor.scale.set(1, 0.85, 0.6);
+  // Glowing eyes on the visor
+  const eL = new THREE.Mesh(new THREE.SphereGeometry(0.15, 24, 24), glow);
+  const eR = eL.clone();
+  eL.position.set(-0.2, 0.82, 0.48); eR.position.set(0.2, 0.82, 0.48);
+  // Side ear-caps (yellow)
+  for (const s of [-1, 1]) {
+    const ear = new THREE.Mesh(new THREE.CylinderGeometry(0.14, 0.14, 0.12, 24), yellow);
+    ear.rotation.z = Math.PI / 2; ear.position.set(s * 0.6, 0.75, 0);
+    body.add(ear);
+  }
+  body.add(head, visor, eL, eR);
+
+  // Torso
+  const torso = new THREE.Mesh(new THREE.SphereGeometry(0.42, 32, 32), white);
+  torso.scale.set(1, 0.9, 0.9); torso.position.y = 0.08;
+  const belt = new THREE.Mesh(new THREE.TorusGeometry(0.34, 0.08, 16, 32), yellow);
+  belt.rotation.x = Math.PI / 2; belt.position.y = 0.0;
+  const core = new THREE.Mesh(new THREE.SphereGeometry(0.12, 20, 20), glow);
+  core.position.set(0, 0.05, 0.36);
+  body.add(torso, belt, core);
+
+  // Mast + big propeller on top (the "space" rotor)
+  const mast = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.06, 0.28, 12), dark);
+  mast.position.y = 1.44;
+  body.add(mast);
+
+  const prop = new THREE.Group();
+  const hub = new THREE.Mesh(new THREE.SphereGeometry(0.13, 20, 20), yellow);
+  prop.add(hub);
+  const blades = 4;
+  for (let i = 0; i < blades; i++) {
+    const blade = new THREE.Mesh(new THREE.BoxGeometry(0.95, 0.035, 0.2), white);
+    blade.position.x = 0.55;                          // sweep out from the hub
+    const arm = new THREE.Group();
+    arm.add(blade);
+    arm.rotation.y = (i / blades) * Math.PI * 2;
+    prop.add(arm);
+  }
+  prop.position.y = 1.62;
+  body.add(prop);
+
+  // Arms: shoulder -> forearm -> gripper.  Grippers open/close.
+  const arms = [];
+  for (const s of [-1, 1]) {
+    const arm = new THREE.Group();
+    const shoulder = new THREE.Mesh(new THREE.SphereGeometry(0.13, 20, 20), dark);
+    const upper = new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.07, 0.4, 16), white);
+    upper.position.y = -0.24;
+    const fore = new THREE.Mesh(new THREE.CylinderGeometry(0.07, 0.06, 0.34, 16), yellow);
+    fore.position.y = -0.55;
+    // gripper: two fingers we can splay
+    const fingerL = new THREE.Mesh(new THREE.BoxGeometry(0.05, 0.16, 0.08), dark);
+    const fingerR = fingerL.clone();
+    fingerL.position.set(-0.05, -0.76, 0); fingerR.position.set(0.05, -0.76, 0);
+    arm.add(shoulder, upper, fore, fingerL, fingerR);
+    arm.position.set(s * 0.45, 0.12, 0.05);
+    arm.rotation.z = s * 0.5;
+    arm.userData = { side: s, fingerL, fingerR };
+    body.add(arm);
+    arms.push(arm);
+  }
+
+  root.userData.update = (t) => {
+    prop.rotation.y = t * 14;                          // fast spin
+    arms.forEach((a) => {
+      a.rotation.z = a.userData.side * (0.5 + Math.sin(t * 2.5) * 0.25);
+      a.rotation.x = Math.sin(t * 2.5 + a.userData.side) * 0.2;
+      const open = (Math.sin(t * 3) * 0.5 + 0.5) * 0.06;   // grippers open/close
+      a.userData.fingerL.position.x = -0.05 - open;
+      a.userData.fingerR.position.x = 0.05 + open;
+    });
+    body.position.y = Math.sin(t * 1.8) * 0.12;        // hover
+    body.rotation.y = Math.sin(t * 0.6) * 0.2;
+  };
+  return root;
+}
+
+/* ============================================================
+   3) FISH  (Biology)  — tail wags, fins flap, body sways as it swims
+   ============================================================ */
+function buildFish() {
+  const root = new THREE.Group();
+  const body = new THREE.Group();
+  root.add(body);
+
+  const bodyMat = toy(0xff8c42, { roughness: 0.45 });   // warm orange
+  const bellyMat = toy(0xfff3e0, { roughness: 0.55 });  // cream belly
+  const finMat = toy(0x2ec5d3, { roughness: 0.4 });     // teal fins
+
+  // Body: rounded, elongated along X (nose at +X, tail at -X)
+  const hull = new THREE.Mesh(new THREE.SphereGeometry(0.7, 40, 32), bodyMat);
+  hull.scale.set(1.5, 0.95, 0.75);
+  body.add(hull);
+
+  // Cream belly patch
+  const belly = new THREE.Mesh(new THREE.SphereGeometry(0.66, 32, 24), bellyMat);
+  belly.scale.set(1.45, 0.6, 0.7); belly.position.y = -0.28;
+  body.add(belly);
+
+  // Big black eyes on both sides of the head
+  const eyeL = makeEye(0.2), eyeR = makeEye(0.2);
+  eyeL.position.set(0.72, 0.16, 0.34);
+  eyeR.position.set(0.72, 0.16, -0.34);
+  body.add(eyeL, eyeR);
+
+  // Little mouth
+  const mouth = new THREE.Mesh(new THREE.SphereGeometry(0.08, 12, 12), toy(0xd9663a));
+  mouth.scale.set(0.6, 0.5, 1); mouth.position.set(1.02, -0.12, 0);
+  body.add(mouth);
+
+  // Forked tail fin on a pivot that wags
+  const tailPivot = new THREE.Group();
+  tailPivot.position.set(-0.95, 0, 0);
+  const tailShape = new THREE.Shape();
+  tailShape.moveTo(0, 0);
+  tailShape.lineTo(-0.75, 0.55);
+  tailShape.lineTo(-0.5, 0);
+  tailShape.lineTo(-0.75, -0.55);
+  tailShape.closePath();
+  const tailGeo = new THREE.ExtrudeGeometry(tailShape,
+    { depth: 0.08, bevelEnabled: true, bevelThickness: 0.02, bevelSize: 0.02, bevelSegments: 1 });
+  tailGeo.translate(0, 0, -0.05);
+  const tail = new THREE.Mesh(tailGeo, finMat);
+  tailPivot.add(tail);
+  body.add(tailPivot);
+
+  // Dorsal fin (top)
+  const dorsalShape = new THREE.Shape();
+  dorsalShape.moveTo(0.3, 0.55);
+  dorsalShape.lineTo(-0.35, 0.55);
+  dorsalShape.lineTo(-0.05, 1.05);
+  dorsalShape.closePath();
+  const dorsalGeo = new THREE.ExtrudeGeometry(dorsalShape, { depth: 0.06, bevelEnabled: false });
+  dorsalGeo.translate(0, 0, -0.03);
+  body.add(new THREE.Mesh(dorsalGeo, finMat));
+
+  // Pectoral fins (one each side) that flap
+  const pecs = [];
+  for (const s of [1, -1]) {
+    const pecPivot = new THREE.Group();
+    pecPivot.position.set(0.3, -0.1, s * 0.5);
+    const pecShape = new THREE.Shape();
+    pecShape.moveTo(0, 0);
+    pecShape.lineTo(-0.15, 0.4);
+    pecShape.lineTo(-0.5, 0.15);
+    pecShape.closePath();
+    const pecGeo = new THREE.ExtrudeGeometry(pecShape, { depth: 0.04, bevelEnabled: false });
+    const pec = new THREE.Mesh(pecGeo, finMat);
+    pec.rotation.x = s * Math.PI / 2;                 // lay fin flat to the side
+    pecPivot.add(pec);
+    pecPivot.userData.side = s;
+    body.add(pecPivot);
+    pecs.push(pecPivot);
+  }
+
+  root.userData.update = (t) => {
+    tailPivot.rotation.y = Math.sin(t * 6) * 0.6;        // wag
+    pecs.forEach((p) => {
+      p.rotation.z = p.userData.side * (Math.sin(t * 5) * 0.3 + 0.2);
+    });
+    body.position.y = Math.sin(t * 2) * 0.16;           // float bob
+    body.rotation.z = Math.sin(t * 1.6) * 0.06;
+    root.rotation.y = -0.5 + Math.sin(t * 0.6) * 0.25;  // 3/4 view + gentle turn
+  };
+  return root;
+}
+
+/* ===== Engine: renderer, worlds, runner, quiz ===== */
+const app=document.getElementById('app');
+const renderer=new THREE.WebGLRenderer({antialias:true});
+renderer.setPixelRatio(Math.min(devicePixelRatio,2)); renderer.setSize(innerWidth,innerHeight);
+renderer.shadowMap.enabled=true; renderer.shadowMap.type=THREE.PCFSoftShadowMap;
+renderer.outputColorSpace=THREE.SRGBColorSpace; renderer.toneMapping=THREE.ACESFilmicToneMapping; renderer.toneMappingExposure=1.05;
+app.appendChild(renderer.domElement);
+const scene=new THREE.Scene();
+const camera=new THREE.PerspectiveCamera(46,innerWidth/innerHeight,0.1,300);
+
+const SM=(c,o={})=>new THREE.MeshStandardMaterial(Object.assign({color:c,roughness:0.5},o));
+const FLAT=(c,o={})=>new THREE.MeshStandardMaterial(Object.assign({color:c,roughness:0.55,flatShading:true},o));
+const GLO=(c,i=1)=>new THREE.MeshStandardMaterial({color:c,emissive:c,emissiveIntensity:i,roughness:0.4});
+function gradTex(a,b,mid){const c=document.createElement('canvas');c.width=8;c.height=256;const x=c.getContext('2d');const g=x.createLinearGradient(0,0,0,256);g.addColorStop(0,a);if(mid)g.addColorStop(.5,mid);g.addColorStop(1,b);x.fillStyle=g;x.fillRect(0,0,8,256);const t=new THREE.CanvasTexture(c);t.colorSpace=THREE.SRGBColorSpace;return t;}
+function glowSprite(col,size){const c=document.createElement('canvas');c.width=c.height=128;const x=c.getContext('2d');const g=x.createRadialGradient(64,64,0,64,64,64);g.addColorStop(0,col);g.addColorStop(1,'rgba(0,0,0,0)');x.fillStyle=g;x.fillRect(0,0,128,128);const s=new THREE.Sprite(new THREE.SpriteMaterial({map:new THREE.CanvasTexture(c),blending:THREE.AdditiveBlending,depthWrite:false,transparent:true}));s.scale.set(size,size,1);return s;}
+
+// Lights
+const hemi=new THREE.HemisphereLight(0xffffff,0xbcc3cc,0.9); scene.add(hemi);
+const key=new THREE.DirectionalLight(0xffffff,1.5); key.position.set(4,9,6); key.castShadow=true;
+key.shadow.mapSize.set(1024,1024); key.shadow.camera.near=1; key.shadow.camera.far=40;
+key.shadow.camera.left=-10;key.shadow.camera.right=10;key.shadow.camera.top=10;key.shadow.camera.bottom=-10; key.shadow.bias=-0.0004; scene.add(key);
+const fill=new THREE.DirectionalLight(0xdfe7ff,0.55); fill.position.set(-6,4,2); scene.add(fill);
+const rim=new THREE.PointLight(0xffffff,0.6,50); rim.position.set(-4,4,-4); scene.add(rim);
+
+// Shared particles
+const N=320, ppos=new Float32Array(N*3);
+for(let i=0;i<N;i++){ppos[i*3]=(Math.random()-0.5)*30;ppos[i*3+1]=Math.random()*14;ppos[i*3+2]=(Math.random()-0.5)*40-4;}
+const pGeo=new THREE.BufferGeometry(); pGeo.setAttribute('position',new THREE.BufferAttribute(ppos,3));
+const pMat=new THREE.PointsMaterial({color:0xffffff,size:0.12,transparent:true,opacity:.8,depthWrite:false});
+const points=new THREE.Points(pGeo,pMat); scene.add(points);
+
+/* ===== Topic config: colors, world theme, questions ===== */
+const TOPICS={
+  art:{build:buildButterfly,face:Math.PI,scale:0.38,
+    bg:['#ffe066','#ff6ec7','#a94fe0'],fog:['#ff9ec4',18,70],hemi:0xfff0d0,hemiG:0xffb0d0,hemiI:0.95,key:0xffffff,keyI:1.5,fill:0xffd0e8,rim:0xff7ac0,rimI:0.6,
+    pod:0xff5ca8,part:0xffffff,partOp:0.85,exp:1.05,floor:0xf39ac8,lane:0xffb9d8,ob:0x7a4fd0,col:0xffd23f},
+  planets:{build:buildRobot,face:Math.PI,scale:0.62,
+    bg:['#3a2f8f','#7a2fb0','#120a2a'],fog:['#2a1a5a',20,90],hemi:0x9a7fe0,hemiG:0x2a1a5a,hemiI:0.7,key:0xe0d4ff,keyI:1.3,fill:0x7fd0ff,rim:0x4dc4ff,rimI:1.2,
+    pod:0x5a3fb0,part:0xd0c0ff,partOp:0.95,exp:1.12,floor:0x241a55,lane:0x3a2a80,ob:0x4a5ab0,col:0x4dd6ff},
+  biology:{build:buildFish,face:Math.PI/2,scale:0.66,
+    bg:['#5fe0e8','#2aa0c8','#0f5a8a'],fog:['#2f97c8',20,80],hemi:0xdffcff,hemiG:0x1a6a8a,hemiI:0.95,key:0xffffff,keyI:1.4,fill:0xa0ecff,rim:0x8fe6ff,rimI:0.7,
+    pod:0x2fb0c0,part:0xe0fbff,partOp:0.7,exp:1.05,floor:0x1c7fa0,lane:0x2f97b8,ob:0x2f9a6a,col:0xffe08a}
+};
+
+const T={
+  en:{pick:"Pick your world",start:"Start",levelClear:"Level clear",again:"Play again",change:"Change world",
+    yes:"🎉 Yes!",notQuite:c=>"Not quite, it's "+c+".",collected:x=>"You collected "+x+" ★",made:p=>"You made "+p+" points!",
+    topics:{art:{name:"Art",char:"Pip the Butterfly",learn:"You'll learn about colors, artists, and how art is made."},
+      planets:{name:"Space",char:"Bolt the Robot",learn:"You'll learn about the Sun, the planets, and the stars."},
+      biology:{name:"Biology",char:"Finn the Fish",learn:"You'll learn about animals, plants, and living things."}}},
+  es:{pick:"Elige tu mundo",start:"Jugar",levelClear:"¡Nivel completado!",again:"Jugar otra vez",change:"Cambiar mundo",
+    yes:"🎉 ¡Sí!",notQuite:c=>"Casi, es "+c+".",collected:x=>"Recogiste "+x+" ★",made:p=>"¡Hiciste "+p+" puntos!",
+    topics:{art:{name:"Arte",char:"Pip la Mariposa",learn:"Aprenderás sobre los colores, los artistas y cómo se hace el arte."},
+      planets:{name:"Espacio",char:"Bolt el Robot",learn:"Aprenderás sobre el Sol, los planetas y las estrellas."},
+      biology:{name:"Biología",char:"Finn el Pez",learn:"Aprenderás sobre los animales, las plantas y los seres vivos."}}}
+};
+
+const QBANK={
+  art:{en:[
+    {q:"Which three are the primary colors?",a:[["Red, yellow, blue",1],["Green, pink, brown",0],["Black, white, gray",0]],why:"You can mix red, yellow, and blue to make almost every other color."},
+    {q:"Blue paint plus yellow paint makes...?",a:[["Green",1],["Purple",0],["Orange",0]],why:"Blue and yellow mix together into green."},
+    {q:"A picture of a person's face is called a...?",a:[["Portrait",1],["Landscape",0],["Still life",0]],why:"A portrait shows a person, usually their face."},
+    {q:"What holds and mixes a painter's colors?",a:[["A palette",1],["A ladder",0],["A pillow",0]],why:"A palette is the board painters use to hold and mix paint."},
+    {q:"A picture made of many tiny tiles is a...?",a:[["Mosaic",1],["Sketch",0],["Shadow",0]],why:"A mosaic is built from lots of little pieces put together."}],
+  es:[
+    {q:"¿Cuáles son los tres colores primarios?",a:[["Rojo, amarillo, azul",1],["Verde, rosa, café",0],["Negro, blanco, gris",0]],why:"Con rojo, amarillo y azul puedes mezclar casi todos los demás colores."},
+    {q:"¿Qué color sale al mezclar azul y amarillo?",a:[["Verde",1],["Morado",0],["Naranja",0]],why:"El azul y el amarillo se mezclan y forman verde."},
+    {q:"Un dibujo de la cara de una persona se llama...",a:[["Retrato",1],["Paisaje",0],["Bodegón",0]],why:"Un retrato muestra a una persona, casi siempre su cara."},
+    {q:"¿Qué usa un pintor para mezclar sus colores?",a:[["Una paleta",1],["Una escalera",0],["Una almohada",0]],why:"La paleta es la tabla donde el pintor mezcla la pintura."},
+    {q:"Un dibujo hecho con muchas piezas pequeñas es un...",a:[["Mosaico",1],["Boceto",0],["Sombra",0]],why:"Un mosaico se arma con muchas piezas pequeñas juntas."}]},
+  planets:{en:[
+    {q:"Which planet do we live on?",a:[["Earth",1],["Mars",0],["Jupiter",0]],why:"Earth is our home, the third planet from the Sun."},
+    {q:"The closest star to us is the...?",a:[["Sun",1],["Moon",0],["North Star",0]],why:"The Sun is a star, and the nearest one to Earth."},
+    {q:"Which planet is the biggest?",a:[["Jupiter",1],["Earth",0],["Mars",0]],why:"Jupiter is the largest planet in our solar system."},
+    {q:"The Moon travels around the...?",a:[["Earth",1],["Sun",0],["Mars",0]],why:"The Moon orbits our planet, Earth."},
+    {q:"A space rock that circles the Sun is an...?",a:[["Asteroid",1],["Igloo",0],["Anchor",0]],why:"Asteroids are rocks that orbit the Sun."}],
+  es:[
+    {q:"¿En qué planeta vivimos?",a:[["La Tierra",1],["Marte",0],["Júpiter",0]],why:"La Tierra es nuestro hogar, el tercer planeta desde el Sol."},
+    {q:"La estrella más cercana a nosotros es el...",a:[["Sol",1],["la Luna",0],["la Estrella Polar",0]],why:"El Sol es una estrella, y la más cercana a la Tierra."},
+    {q:"¿Cuál es el planeta más grande?",a:[["Júpiter",1],["La Tierra",0],["Marte",0]],why:"Júpiter es el planeta más grande del sistema solar."},
+    {q:"La Luna gira alrededor de...",a:[["la Tierra",1],["el Sol",0],["Marte",0]],why:"La Luna orbita nuestro planeta, la Tierra."},
+    {q:"Una roca del espacio que gira alrededor del Sol es un...",a:[["Asteroide",1],["Iglú",0],["Ancla",0]],why:"Los asteroides son rocas que orbitan el Sol."}]},
+  biology:{en:[
+    {q:"What do plants need from the Sun?",a:[["Light",1],["Ice",0],["Music",0]],why:"Plants use sunlight to make their own food."},
+    {q:"A baby frog is called a...?",a:[["Tadpole",1],["Puppy",0],["Cub",0]],why:"Frogs begin life as tadpoles in the water."},
+    {q:"Which part of a plant drinks water from the soil?",a:[["Roots",1],["Petals",0],["Leaves",0]],why:"Roots pull up water and food from the ground."},
+    {q:"How do fish breathe underwater?",a:[["With gills",1],["With ears",0],["With fins",0]],why:"Fish use gills to take oxygen from the water."},
+    {q:"Which of these is an insect?",a:[["Butterfly",1],["Shark",0],["Turtle",0]],why:"Butterflies are insects, with six legs and wings."}],
+  es:[
+    {q:"¿Qué necesitan las plantas del Sol?",a:[["Luz",1],["Hielo",0],["Música",0]],why:"Las plantas usan la luz del sol para hacer su alimento."},
+    {q:"Una rana bebé se llama...",a:[["Renacuajo",1],["Cachorro",0],["Osezno",0]],why:"Las ranas empiezan su vida como renacuajos en el agua."},
+    {q:"¿Qué parte de la planta toma agua de la tierra?",a:[["Las raíces",1],["Los pétalos",0],["Las hojas",0]],why:"Las raíces absorben agua y alimento del suelo."},
+    {q:"¿Cómo respiran los peces bajo el agua?",a:[["Con branquias",1],["Con orejas",0],["Con aletas",0]],why:"Los peces usan branquias para tomar oxígeno del agua."},
+    {q:"¿Cuál de estos es un insecto?",a:[["Mariposa",1],["Tiburón",0],["Tortuga",0]],why:"Las mariposas son insectos, con seis patas y alas."}]}
+};
+
+let lang='es';
+function loadPoints(){try{return parseInt(localStorage.getItem('flyLearnPoints')||'0',10)||0;}catch(e){return 0;}}
+function savePoints(){try{localStorage.setItem('flyLearnPoints',String(totalPoints));}catch(e){}}
+let totalPoints=loadPoints();
+function updateTotal(){const el=document.getElementById('total');el.innerHTML='<span class="ic">★</span> '+totalPoints;el.setAttribute('aria-label','Total points '+totalPoints);}
+
+
+/* ===== Menu rig ===== */
+const menuRig=new THREE.Group(); scene.add(menuRig);
+const podMat=SM(0xff5ca8,{roughness:0.5});
+const podium=new THREE.Mesh(new THREE.CylinderGeometry(1.9,2.1,0.5,44),podMat); podium.position.y=-0.95; podium.receiveShadow=true; podium.castShadow=true; menuRig.add(podium);
+const podRing=new THREE.Mesh(new THREE.TorusGeometry(1.92,0.07,12,54),SM(0xffffff,{roughness:0.35,metalness:0.2})); podRing.position.y=-0.68; podRing.rotation.x=Math.PI/2; menuRig.add(podRing);
+const menuFloor=new THREE.Mesh(new THREE.PlaneGeometry(40,40),new THREE.ShadowMaterial({opacity:0.18})); menuFloor.rotation.x=-Math.PI/2; menuFloor.position.y=-0.72; menuFloor.receiveShadow=true; menuRig.add(menuFloor);
+
+const menuChars={};
+for(const k in TOPICS){const c=TOPICS[k].build();c.scale.setScalar(0.78);c.position.set(0,0.35,0);c.traverse(o=>{if(o.isMesh){o.castShadow=true;o.receiveShadow=true;}});c.visible=false;menuRig.add(c);menuChars[k]=c;}
+
+function buildMenuProps(){
+  const P={art:new THREE.Group(),planets:new THREE.Group(),biology:new THREE.Group()};
+  const cols=[0xff5ca8,0xffb14e,0x4ec5ff,0x8b5cf6,0x5fe0b7,0xffd23f];
+  for(let i=0;i<10;i++){const b=new THREE.Mesh(new THREE.IcosahedronGeometry(0.3+Math.random()*0.32,0),FLAT(cols[i%6],{emissive:new THREE.Color(cols[i%6]).multiplyScalar(0.18)}));b.position.set((Math.random()-0.5)*12,2+Math.random()*4.5,-3-Math.random()*6);b.userData.sp=0.3+Math.random()*0.6;P.art.add(b);}
+  const rainbow=new THREE.Mesh(new THREE.TorusGeometry(5.2,0.28,12,60,Math.PI),SM(0xff8ab0,{emissive:0x662233,emissiveIntensity:0.5})); rainbow.position.set(0,1,-11.5); P.art.add(rainbow);
+  const planet=new THREE.Mesh(new THREE.SphereGeometry(1.6,32,26),FLAT(0xff7a5c,{roughness:0.7,emissive:0x3a1020,emissiveIntensity:0.4})); planet.position.set(-4.8,4.2,-9);
+  const ring=new THREE.Mesh(new THREE.TorusGeometry(2.4,0.2,14,54),SM(0xffd28a,{roughness:0.6,emissive:0x442a10,emissiveIntensity:0.3})); ring.position.copy(planet.position); ring.rotation.set(Math.PI/2.4,0.3,0);
+  P.planets.add(planet,ring); P.planets.userData.floaters=[];
+  const neb=[0x8b5cf6,0xff5ce1,0x4dc4ff,0x5fe0b7];
+  for(let i=0;i<7;i++){const cc=neb[i%4];const cry=new THREE.Mesh(new THREE.OctahedronGeometry(0.3+Math.random()*0.24,0),GLO(cc,1.8));cry.position.set((Math.random()-0.5)*13,2+Math.random()*5,-3-Math.random()*7);cry.add(glowSprite('rgba(160,140,255,.85)',1.4));cry.userData.sp=0.4+Math.random()*0.6;P.planets.add(cry);P.planets.userData.floaters.push(cry);}
+  for(let i=0;i<6;i++){const s=glowSprite(['rgba(255,120,220,.8)','rgba(120,200,255,.8)','rgba(255,255,255,.9)'][i%3],0.9+Math.random());s.position.set((Math.random()-0.5)*17,3+Math.random()*6,-6-Math.random()*6);P.planets.add(s);}
+  [[-3.7,-3,1.4],[3.8,-3.7,1.7],[0,-6.6,2.2]].forEach(([x,z,s])=>{const pad=new THREE.Mesh(new THREE.CylinderGeometry(s,s,0.12,24),FLAT(0x37c06a,{roughness:0.7}));pad.position.set(x,0.05,z);pad.receiveShadow=true;P.biology.add(pad);});
+  function coral(x,z,col){const g2=new THREE.Group();for(let i=0;i<4;i++){const arm=new THREE.Mesh(new THREE.CylinderGeometry(0.06,0.12,0.6+Math.random()*0.5,8),FLAT(col));arm.position.set((Math.random()-0.5)*0.4,0.4,(Math.random()-0.5)*0.4);arm.rotation.z=(Math.random()-0.5)*0.7;g2.add(arm);}g2.position.set(x,0,z);return g2;}
+  [[-2.4,0.6,0xff6ec7],[2.5,0.4,0xffb14e],[-1.6,-1.3,0x9b6cf0],[1.9,-1.5,0xff5c8a],[0,-2.4,0x4ec5ff]].forEach(([x,z,c])=>P.biology.add(coral(x,z,c)));
+  for(let i=0;i<6;i++){const bub=glowSprite('rgba(200,240,255,.7)',0.5+Math.random()*0.6);bub.position.set((Math.random()-0.5)*10,1.5+Math.random()*5,-3-Math.random()*6);P.biology.add(bub);}
+  Object.values(P).forEach(gr=>{gr.visible=false;menuRig.add(gr);});
+  return P;
+}
+const menuProps=buildMenuProps();
+
+/* ===== Game rig ===== */
+const gameRig=new THREE.Group(); gameRig.visible=false; scene.add(gameRig);
+const LANE_X=[-1.5,0,1.5], laneW=1.5, CEIL=6.0;
+const K={speed:11,gravity:22,flap:8.2,yMin:1.0,yMax:5.0,laneLerp:0.22,levelLength:380,hitR:0.55,spawnAtZ:-115,
+  gapScale:1,starMul:1,goldChance:0,twoLaneBias:0.5,runIn:12};
+let level=1;
+// Per-level progression: faster, longer, tighter, more (and richer) stars. All values ease toward a cap so it stays fair.
+function difficulty(L){return{
+  speed:      Math.min(11 + (L-1)*0.9, 17),
+  levelLength:380 + (L-1)*70,
+  gapScale:   Math.max(1 - (L-1)*0.05, 0.66),
+  starMul:    Math.min(1 + (L-1)*0.15, 1.8),
+  goldChance: L>=2 ? Math.min(0.10 + (L-2)*0.04, 0.30) : 0,   // gold (double-point) stars unlock at level 2
+  twoLaneBias:Math.min(0.5 + (L-1)*0.07, 0.85)                // higher levels close two lanes more often
+};}
+
+const gFloor=new THREE.Mesh(new THREE.PlaneGeometry(30,600),SM(0x333947)); gFloor.rotation.x=-Math.PI/2; gFloor.position.set(0,0,-160); gFloor.receiveShadow=true; gameRig.add(gFloor);
+const laneStrips=[]; LANE_X.forEach(x=>{const s=new THREE.Mesh(new THREE.PlaneGeometry(laneW,600),SM(0x3a4150));s.rotation.x=-Math.PI/2;s.position.set(x,0.02,-160);s.receiveShadow=true;gameRig.add(s);laneStrips.push(s);});
+const grids=[]; for(let i=0;i<4;i++){const g=new THREE.GridHelper(30,12,0xffffff,0xffffff);g.material.transparent=true;g.material.opacity=0.12;g.position.z=-i*45;gameRig.add(g);grids.push(g);}
+
+const playerG=new THREE.Group(); gameRig.add(playerG);
+let playerChar=null, obMat=null, colMat=null, goldMat=null;
+const obstacles=[], stars=[]; let finishArch=null;
+
+function themeGame(p){
+  gFloor.material.color.setHex(p.floor); laneStrips.forEach(s=>s.material.color.setHex(p.lane));
+  obMat=FLAT(p.ob,{roughness:0.7}); colMat=GLO(p.col,1.5); goldMat=goldMat||GLO(0xffd23f,2.2);
+}
+const CLR_Z=1.9, CLR_X=0.6, CLR_Y=0.7;   // star<->obstacle clearance (also keeps glow halos off walls); CLR_X<0.75 so adjacent lanes stay collectible
+function clearStarsNear(cx,w,yLo,yHi,z){for(let i=stars.length-1;i>=0;i--){const s=stars[i];if(Math.abs(s.position.z-z)<CLR_Z&&Math.abs(s.position.x-cx)<w/2+CLR_X&&s.position.y+CLR_Y>yLo&&s.position.y-CLR_Y<yHi){gameRig.remove(s);stars.splice(i,1);}}}
+function addWall(cx,w,yLo,yHi,z,fade){if(z<=-K.levelLength)return;const h=yHi-yLo;const mat=fade?Object.assign(obMat.clone(),{transparent:true}):obMat;const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,1.5),mat);m.position.set(cx,(yLo+yHi)/2,z);m.castShadow=!fade;m.userData={hw:w/2,yLo,yHi,fade:!!fade};gameRig.add(m);obstacles.push(m);clearStarsNear(cx,w,yLo,yHi,z);}
+function starHitsObstacle(x,y,z){
+  for(const o of obstacles){
+    if(Math.abs(o.position.z-z)<CLR_Z && Math.abs(o.position.x-x)<o.userData.hw+CLR_X && y+CLR_Y>o.userData.yLo && y-CLR_Y<o.userData.yHi) return true;
+  }
+  return false;
+}
+// Rules enforced here: (1) nothing spawns past the finish line, (2) a star never overlaps an obstacle.
+function addStar(x,y,z,kind){
+  if(z<=-K.levelLength || starHitsObstacle(x,y,z))return;
+  const gold=kind==='gold';
+  const s=new THREE.Mesh(new THREE.IcosahedronGeometry(gold?0.40:0.34,0), gold?goldMat:colMat);
+  s.position.set(x,y,z); s.add(glowSprite(gold?'rgba(255,214,90,.9)':'rgba(255,240,180,.7)', gold?1.4:1.1));
+  s.userData={pts:gold?2:1,gold};
+  gameRig.add(s); stars.push(s);
+}
+function starKind(){return Math.random()<K.goldChance?'gold':'normal';}
+function coinsLane(li,y,z,n){n=Math.max(1,Math.round((n||4)*K.starMul/4));for(let i=0;i<n;i++)addStar(LANE_X[li],y,z+7+i*2.4,starKind());}
+
+const PHRASES=[
+  [['fly',13],['fly',13],['fly',15],['rest',22]],
+  [['fly',16],['lane',16],['fly',16],['lane',18],['rest',22]],
+  [['lane',15],['lane',15],['lane',17],['rest',20]],
+  [['hump',12],['hump',12],['hump',14],['rest',22]],
+  [['ceil',15],['fly',16],['ceil',15],['fly',16],['ceil',15],['rest',20]],
+  [['tall',20],['ceil',18],['tall',20],['rest',24]],
+  [['fly',16],['lane',18],['ceil',16],['hump',14],['rest',22]],
+  [['fly',18],['rest',22]]
+];
+// Harder patterns enter the mix at level 3+. Add new tiers/types here to extend progression.
+const PHRASES_HARD=[
+  [['lane',13],['lane',13],['lane',15],['rest',18]],
+  [['ceil',13],['fly',13],['ceil',13],['fly',13],['rest',18]],
+  [['hump',11],['ceil',15],['hump',11],['ceil',15],['rest',18]],
+  [['fly',12],['lane',13],['fly',12],['ceil',13],['fly',13],['rest',18]]
+];
+let phrase=[];
+function refill(){const pool=level>=3?PHRASES.concat(PHRASES_HARD):PHRASES;const p=pool[(Math.random()*pool.length)|0];p.forEach(e=>phrase.push({type:e[0],gap:e[1]}));}
+function nextEvent(){if(phrase.length===0)refill();return phrase.shift();}
+// Shared lane-coverage rule for high AND low walls: mostly 1-2 lanes (left/middle/right combos), occasionally full. twoBias pushes toward more lanes at higher levels.
+function laneSet(twoBias){
+  if(Math.random()<0.15) return [0,1,2];                                  // full
+  if(Math.random()<(twoBias||0.5)){const a=(Math.random()*3)|0;let b=(a+1+((Math.random()*2)|0))%3;return [a,b];} // two lanes
+  return [(Math.random()*3)|0];                                            // one lane
+}
+function spawnEvent(type,z){
+  // Every LOW obstacle top stays <=2.6; HIGH (ceil) walls hang from 3.3 to the ceiling and fade once behind you.
+  if(type==='rest'){const n=Math.max(1,Math.round((4+(K.starMul-1)*3)/4));for(let i=0;i<n;i++){const y=2.7+(n>1?Math.sin(i/(n-1)*Math.PI)*1.3:0);addStar(LANE_X[1],y,z+7+i*2.4,starKind());}return;} // breather: coin arc, no walls
+  if(type==='fly'){LANE_X.forEach(x=>addWall(x,laneW,0,2.4,z));coinsLane(1,3.6,z);}
+  else if(type==='lane'){const cl=laneSet(K.twoLaneBias);cl.forEach(li=>addWall(LANE_X[li],laneW,0,2.4,z));const open=[0,1,2].filter(i=>!cl.includes(i));if(open.length)coinsLane(open[(Math.random()*open.length)|0],1.6,z);else coinsLane(1,3.5,z);}
+  else if(type==='hump'){const hs=[0,1,2].filter(()=>Math.random()<0.6);if(hs.length===0)hs.push((Math.random()*3)|0);hs.forEach(li=>addWall(LANE_X[li],laneW,0,1.5,z));const openL=[0,1,2].find(i=>!hs.includes(i));coinsLane(openL===undefined?1:openL,openL===undefined?3.2:1.4,z);}
+  else if(type==='ceil'){const cl=laneSet(K.twoLaneBias);cl.forEach(li=>addWall(LANE_X[li],laneW,3.3,CEIL,z,true));const open=[0,1,2].filter(i=>!cl.includes(i));if(open.length)coinsLane(open[(Math.random()*open.length)|0],2.3,z);else coinsLane(1,1.3,z);} // sidestep to an open lane, or dive under a full one
+  else{const li=(Math.random()*3)|0;addWall(LANE_X[li],laneW,0,2.6,z);coinsLane(li,3.8,z);}
+}
+function makeFinish(){const g2=new THREE.Group();const mat=SM(0xffffff,{emissive:0x88ff99,emissiveIntensity:0.5,roughness:0.5});const pL=new THREE.Mesh(new THREE.BoxGeometry(0.7,7,0.7),mat);pL.position.set(-2.5,3.5,0);const pR=pL.clone();pR.position.x=2.5;const top=new THREE.Mesh(new THREE.BoxGeometry(5.6,0.8,0.8),mat);top.position.y=6.6;g2.add(pL,pR,top);g2.position.z=-K.levelLength;gameRig.add(g2);finishArch=g2;}
+
+let mode='normal', vy=0, lane=1, traveled=0, hearts=3, invuln=0, score=0, nextSpawnTravel=0;
+function clearGame(){obstacles.forEach(o=>{if(o.userData.fade&&o.material)o.material.dispose();gameRig.remove(o);});obstacles.length=0;stars.forEach(s=>gameRig.remove(s));stars.length=0;if(finishArch){gameRig.remove(finishArch);finishArch=null;}}
+function resetGame(topicKey){
+  const p=TOPICS[topicKey]; themeGame(p);
+  const d=difficulty(level); K.speed=d.speed; K.levelLength=d.levelLength; K.gapScale=d.gapScale; K.starMul=d.starMul; K.goldChance=d.goldChance; K.twoLaneBias=d.twoLaneBias;
+  if(levelTagEl)levelTagEl.textContent='Lv '+level;
+  clearGame(); phrase.length=0;
+  if(playerChar)playerG.remove(playerChar);
+  playerChar=p.build(); playerChar.scale.setScalar(p.scale); playerChar.position.y=-0.4;
+  playerChar.traverse(o=>{if(o.isMesh){o.castShadow=true;}});
+  playerG.add(playerChar); playerG.userData.face=p.face;
+  playerG.position.set(0,4,0);
+  vy=0; lane=1; traveled=0; hearts=3; invuln=0; score=0; nextSpawnTravel=0;
+  spawnEvent('fly',-38); spawnEvent('lane',-66); spawnEvent('fly',-94);
+  makeFinish();
+  heartsEl.textContent='♥♥♥'; heartsEl.setAttribute('aria-label','Lives: 3'); barfill.style.width='0%'; barEl.setAttribute('aria-valuenow','0'); scoreEl.innerHTML='<span class="ic">★</span> 0'; scoreEl.setAttribute('aria-label','Points this run: 0');
+}
+function loseHeart(){if(invuln>0)return;hearts--;invuln=1.1;heartsEl.textContent=hearts>0?'♥'.repeat(hearts):'·';heartsEl.setAttribute('aria-label','Lives: '+Math.max(0,hearts));if(hearts<=0)resetGame(current);}
+
+/* ===== HUD + quiz elements ===== */
+const heartsEl=document.getElementById('hearts'), barfill=document.getElementById('barfill'), scoreEl=document.getElementById('score'), barEl=document.getElementById('bar'), levelTagEl=document.getElementById('levelTag');
+const hud=document.getElementById('hud'), menuUI=document.getElementById('menuUI'), tabsEl=document.getElementById('tabs'), startBtn=document.getElementById('startBtn');
+const quizEl=document.getElementById('quiz'), totalEl=document.getElementById('total'), langtogEl=document.getElementById('langtog');
+const topicSeg=document.getElementById('topicSeg');
+function moveKnob(seg){
+  if(!seg||!seg.offsetWidth)return;                  // skip while hidden (offsets would be 0)
+  const btn=seg.querySelector('button.on'); if(!btn)return;
+  const knob=seg.querySelector('.knob'); if(!knob)return;
+  const bl=parseFloat(getComputedStyle(seg).borderLeftWidth)||0;
+  knob.style.left=(btn.offsetLeft-bl)+'px';
+  knob.style.width=btn.offsetWidth+'px';
+}
+// Place the menu header below whatever height the top buttons actually are, at any screen size.
+function layoutMenuHead(){
+  const head=document.getElementById('menuHead'); if(!head)return;
+  let bottom=0;
+  [langtogEl,totalEl].forEach(el=>{ if(el&&el.offsetWidth){ const r=el.getBoundingClientRect(); if(r.bottom>bottom)bottom=r.bottom; } });
+  if(bottom>0) head.style.top=Math.round(bottom+16)+'px';
+}
+
+let state='menu', current='art', qIndex={art:0,planets:0,biology:0};
+
+function applyTopic(k){
+  current=k; const p=TOPICS[k];
+  scene.background=gradTex(p.bg[0],p.bg[2],p.bg[1]); scene.fog=new THREE.Fog(new THREE.Color(p.fog[0]),p.fog[1],p.fog[2]);
+  hemi.color.setHex(p.hemi); hemi.groundColor.setHex(p.hemiG); hemi.intensity=p.hemiI;
+  key.color.setHex(p.key); key.intensity=p.keyI; fill.color.setHex(p.fill); rim.color.setHex(p.rim); rim.intensity=p.rimI;
+  podMat.color.setHex(p.pod); pMat.color.setHex(p.part); pMat.opacity=p.partOp; renderer.toneMappingExposure=p.exp;
+  Object.keys(menuChars).forEach(kk=>menuChars[kk].visible=kk===k);
+  Object.keys(menuProps).forEach(kk=>menuProps[kk].visible=kk===k);
+  const tt=T[lang].topics[k]; document.getElementById('title').textContent=tt.name; document.getElementById('learn').textContent=tt.learn;
+  document.querySelectorAll('#topicSeg button').forEach(b=>{const on=b.dataset.t===k;b.classList.toggle('on',on);b.setAttribute('aria-pressed',on?'true':'false');});
+  moveKnob(topicSeg);
+}
+
+function showMenu(){state='menu';level=1;menuRig.visible=true;gameRig.visible=false;menuUI.classList.remove('hidden');tabsEl.classList.remove('hidden');startBtn.classList.remove('hidden');hud.classList.add('hidden');quizEl.classList.add('hidden');langtogEl.classList.remove('hidden');totalEl.classList.remove('hidden');applyTopic(current);layoutMenuHead();}
+function startGame(m){mode=m;state='play';menuUI.classList.add('hidden');tabsEl.classList.add('hidden');startBtn.classList.add('hidden');quizEl.classList.add('hidden');langtogEl.classList.add('hidden');totalEl.classList.add('hidden');menuRig.visible=false;gameRig.visible=true;hud.classList.remove('hidden');resetGame(current);}
+
+function sparkleBurst(){
+  const host=document.getElementById('sparkles'); if(!host)return;
+  host.innerHTML='';
+  const glyphs=['✨','⭐','🌟','💫','✦'];
+  for(let i=0;i<20;i++){
+    const s=document.createElement('span'); s.className='sparkle'; s.textContent=glyphs[(Math.random()*glyphs.length)|0];
+    const ang=Math.random()*Math.PI*2, dist=90+Math.random()*180;
+    s.style.setProperty('--dx',(Math.cos(ang)*dist).toFixed(0)+'px');
+    s.style.setProperty('--dy',(Math.sin(ang)*dist-30).toFixed(0)+'px');
+    s.style.setProperty('--rot',((Math.random()*720-360)|0)+'deg');
+    s.style.fontSize=(16+Math.random()*20).toFixed(0)+'px';
+    s.style.animationDelay=(Math.random()*0.12).toFixed(2)+'s';
+    host.appendChild(s);
+  }
+  setTimeout(()=>{if(host)host.innerHTML='';},1200);
+}
+function showQuiz(){
+  state='question'; hud.classList.add('hidden'); quizEl.classList.remove('hidden'); totalEl.classList.remove('hidden');
+  const t=T[lang]; const bank=QBANK[current][lang]; const item=bank[qIndex[current]%bank.length]; qIndex[current]++;
+  document.getElementById('quizTag').textContent=t.levelClear;
+  document.getElementById('starline').textContent=t.collected(score);
+  document.getElementById('question').textContent=item.q;
+  const wrap=document.getElementById('answers'); wrap.innerHTML='';
+  item.a.forEach(([txt,ok])=>{const b=document.createElement('button');b.className='qbtn';b.textContent=txt;b.addEventListener('click',()=>answer(b,ok,item));wrap.appendChild(b);});
+  const fb=document.getElementById('feedback'); fb.className='hidden'; fb.innerHTML='';
+  document.getElementById('again').classList.add('hidden'); document.getElementById('toMenu').classList.add('hidden');
+}
+function answer(btn,ok,item){
+  const t=T[lang]; const correctText=item.a.find(x=>x[1]===1)[0];
+  document.querySelectorAll('#answers .qbtn').forEach(b=>{b.disabled=true;if(b.textContent===correctText)b.classList.add('correct');});
+  if(!ok)btn.classList.add('wrong');
+  const earned=score+(ok?10:0); totalPoints+=earned; savePoints(); updateTotal();
+  const fb=document.getElementById('feedback'); fb.classList.remove('hidden');
+  fb.className=ok?'good':'bad';
+  if(ok)sparkleBurst();
+  const head=ok?t.yes:t.notQuite(correctText);
+  fb.innerHTML='<span class="big">'+head+'</span>'+item.why+'<div class="pts">'+t.made(earned)+'</div>';
+  document.getElementById('again').classList.remove('hidden'); document.getElementById('toMenu').classList.remove('hidden');
+}
+
+function applyLang(l){
+  lang=l; const t=T[lang];
+  document.getElementById('kick').textContent=t.pick;
+  document.querySelectorAll('#topicSeg button').forEach(b=>{b.querySelector('.lbl').textContent=t.topics[b.dataset.t].name;});
+  startBtn.textContent=t.start;
+  document.getElementById('again').textContent=t.again;
+  document.getElementById('toMenu').textContent=t.change;
+  document.getElementById('quizTag').textContent=t.levelClear;
+  document.querySelectorAll('#langtog button').forEach(b=>{const on=b.dataset.l===l;b.classList.toggle('on',on);b.setAttribute('aria-pressed',on?'true':'false');});
+  moveKnob(langtogEl); moveKnob(topicSeg); layoutMenuHead();
+  document.documentElement.lang=l;
+  updateTotal();
+  if(state==='menu')applyTopic(current);
+}
+
+/* ===== Input (play only) ===== */
+let pd=null;
+function flap(){if(state==='play')vy=K.flap;}
+function moveLane(d){lane=Math.max(0,Math.min(2,lane+d));}
+app.addEventListener('pointerdown',e=>{if(state!=='play')return;pd={x:e.clientX,y:e.clientY,t:performance.now()};});
+app.addEventListener('pointerup',e=>{if(state!=='play'||!pd)return;const dx=e.clientX-pd.x,dy=e.clientY-pd.y,quick=(performance.now()-pd.t)<400;if(Math.abs(dx)>38&&Math.abs(dx)>Math.abs(dy)){if(mode==='normal')moveLane(dx>0?1:-1);}else if(Math.abs(dx)<16&&Math.abs(dy)<16&&quick){flap();}pd=null;});
+addEventListener('keydown',e=>{if(state!=='play')return;const k=e.key.toLowerCase();if((k==='arrowleft'||k==='a')&&mode==='normal'){e.preventDefault();moveLane(-1);}else if((k==='arrowright'||k==='d')&&mode==='normal'){e.preventDefault();moveLane(1);}else if(k===' '||k==='arrowup'||k==='w'){e.preventDefault();flap();}});
+function autoSteer(){let tl=null,near=Infinity;for(const s of stars){const dz=s.position.z-playerG.position.z;if(dz<0||dz>32)continue;if(dz<near){near=dz;tl=s.position.x;}}if(tl===null)return;lane=tl<-1.7?0:tl>1.7?2:1;}
+
+/* ===== UI wiring ===== */
+document.querySelectorAll('#topicSeg button').forEach(b=>b.addEventListener('click',()=>{if(state==='menu')applyTopic(b.dataset.t);}));
+startBtn.addEventListener('click',()=>startGame('normal'));
+document.querySelectorAll('#langtog button').forEach(b=>b.addEventListener('click',()=>applyLang(b.dataset.l)));
+document.getElementById('again').addEventListener('click',()=>{level++;startGame(mode);});
+document.getElementById('toMenu').addEventListener('click',showMenu);
+
+/* ===== Loop ===== */
+const clock=new THREE.Clock(); let t=0;
+function updatePlay(dt){
+  const move=K.speed*dt; traveled+=move;
+  obstacles.forEach(o=>o.position.z+=move); stars.forEach(s=>{s.position.z+=move;s.rotation.y+=dt*2;}); if(finishArch)finishArch.position.z+=move;
+  for(const o of obstacles)if(o.userData.fade){const z=o.position.z;o.material.opacity=z<1.5?1:Math.max(0,(5.5-z)/4);o.material.depthWrite=o.material.opacity>0.95;} // solid on approach + through the hit, gone before it reaches the lens
+  grids.forEach(g=>{g.position.z+=move;if(g.position.z>45)g.position.z-=45*grids.length;});
+  vy-=K.gravity*dt; playerG.position.y+=vy*dt;
+  if(playerG.position.y<K.yMin){playerG.position.y=K.yMin;vy=0;} if(playerG.position.y>K.yMax){playerG.position.y=K.yMax;vy=0;}
+  if(mode==='easy')autoSteer();
+  playerG.position.x+=(LANE_X[lane]-playerG.position.x)*K.laneLerp;
+  if(playerChar&&playerChar.userData.update)playerChar.userData.update(t);
+  if(playerChar){playerChar.rotation.y=playerG.userData.face+(LANE_X[lane]-playerG.position.x)*-0.12;playerChar.rotation.z=(LANE_X[lane]-playerG.position.x)*0.14;}
+  if(invuln>0){invuln-=dt;if(playerChar)playerChar.visible=Math.floor(invuln*20)%2===0;}else if(playerChar)playerChar.visible=true;
+  for(let i=obstacles.length-1;i>=0;i--)if(obstacles[i].position.z>12){const o=obstacles[i];if(o.userData.fade&&o.material)o.material.dispose();gameRig.remove(o);obstacles.splice(i,1);}
+  for(let i=stars.length-1;i>=0;i--)if(stars[i].position.z>12){gameRig.remove(stars[i]);stars.splice(i,1);}
+  while(traveled>=nextSpawnTravel && traveled < K.levelLength+K.spawnAtZ-K.runIn){const ev=nextEvent();spawnEvent(ev.type,K.spawnAtZ);nextSpawnTravel += Math.max(ev.gap*K.gapScale, ev.type==='rest'?14:9);}
+  const px=playerG.position.x,py=playerG.position.y;
+  for(let i=stars.length-1;i>=0;i--){const s=stars[i];if(Math.abs(s.position.z)>1.5)continue;if(Math.abs(s.position.x-px)<1.2&&Math.abs(s.position.y-py)<1.3){gameRig.remove(s);stars.splice(i,1);score+=s.userData.pts||1;scoreEl.innerHTML='<span class="ic">★</span> '+score;scoreEl.setAttribute('aria-label','Points this run: '+score);}}
+  for(const o of obstacles){if(Math.abs(o.position.z)>1.1)continue;if(Math.abs(o.position.x-px)<o.userData.hw+K.hitR&&py+0.7>o.userData.yLo&&py-0.7<o.userData.yHi){loseHeart();}}
+  if(finishArch&&finishArch.position.z>0.5)showQuiz();
+  const prog=Math.min(100,(traveled/K.levelLength)*100); barfill.style.width=prog.toFixed(1)+'%'; barEl.setAttribute('aria-valuenow',Math.round(prog));
+}
+function tick(){
+  requestAnimationFrame(tick); const dt=Math.min(clock.getDelta(),0.033); t+=dt;
+  points.rotation.y+=0.0005;
+  if(state==='menu'||state==='difficulty'){
+    camera.position.set(Math.sin(t*0.2)*0.9,1.5,6.4); camera.lookAt(0,0.5,-0.5);
+    const c=menuChars[current]; if(c&&c.userData.update)c.userData.update(t);
+    if(menuProps[current]&&menuProps[current].visible){menuProps[current].children.forEach(o=>{if(o.userData&&o.userData.sp){o.position.y+=Math.sin(t*o.userData.sp+o.position.x)*0.003;o.rotation.y+=0.01;}});}
+  } else {
+    if(state==='play')updatePlay(dt);
+    const cx=playerG.position.x*0.35;
+    camera.position.set(cx,5,9); camera.lookAt(cx,2.5,-5.5);
+  }
+  renderer.render(scene,camera);
+}
+applyLang('es'); showMenu(); tick();
+requestAnimationFrame(()=>{moveKnob(langtogEl);moveKnob(topicSeg);layoutMenuHead();});   // settle after fonts/layout
+addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight);moveKnob(langtogEl);moveKnob(topicSeg);layoutMenuHead();});
+</script>
+</body>
+</html>
