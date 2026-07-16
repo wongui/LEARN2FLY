@@ -8,18 +8,18 @@
 <meta name="theme-color" content="#6d3fd0"/>
 <title>Learn 2 Fly — Vuela y aprende</title>
 <meta name="description" content="Un juego para niños: vuela por 3 mundos, junta estrellas y aprende sobre arte, espacio y biología. En español e inglés."/>
-<meta property="og:url" content="https://github.com/wongui/LEARN2FLY/"/>
+<meta property="og:url" content="https://USUARIO.github.io/learn2fly/"/>
 <meta property="og:type" content="website"/>
 <meta property="og:title" content="Learn 2 Fly — Vuela y aprende"/>
 <meta property="og:description" content="Vuela por 3 mundos, junta estrellas y aprende arte, espacio y biología. ¡Para niños, en español e inglés!"/>
-<meta property="og:image" content="https://raw.githubusercontent.com/wongui/LEARN2FLY/refs/heads/main/og-image.png"/>
+<meta property="og:image" content="https://USUARIO.github.io/learn2fly/og-image.png"/>
 <meta property="og:image:width" content="1200"/>
 <meta property="og:image:height" content="800"/>
 <meta property="og:locale" content="es_ES"/>
 <meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:title" content="Learn 2 Fly — Vuela y aprende"/>
 <meta name="twitter:description" content="Vuela, junta estrellas y aprende arte, espacio y biología."/>
-<meta name="twitter:image" content="https://raw.githubusercontent.com/wongui/LEARN2FLY/refs/heads/main/og-image.png"/>
+<meta name="twitter:image" content="https://USUARIO.github.io/learn2fly/og-image.png"/>
 <link rel="icon" href="favicon.png" type="image/png"/>
 <link rel="apple-touch-icon" href="apple-touch-icon.png"/>
 <link rel="manifest" href="manifest.json"/>
@@ -112,7 +112,7 @@
   }
   @media (prefers-reduced-motion: reduce){ .btn,.tab,.qbtn{transition:none;} }
   /* ===== Segmented selector (shared: language toggle + topic picker) ===== */
-  #langtog{margin:2px 0;}
+  #langtog{position:absolute;top:calc(18px + env(safe-area-inset-top,0px));left:50%;transform:translateX(-50%);margin:0;z-index:2;}
   .seg{position:relative;display:inline-flex;padding:5px;border-radius:999px;pointer-events:auto;
     background:linear-gradient(180deg,rgba(255,255,255,.22),rgba(255,255,255,.08));
     border:1px solid rgba(255,255,255,.5);
@@ -180,7 +180,18 @@
   #pauseMenu .btn{min-width:220px;margin-top:6px;}
 
   /* ===== Intro / login screen ===== */
-  #intro{gap:18px;}
+  #intro{justify-content:center;}
+  #introStack{display:flex;flex-direction:column;align-items:center;gap:18px;width:100%;}
+  #profileList{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;max-width:min(440px,88vw);}
+  .profileChip{cursor:pointer;font:inherit;font-weight:800;font-size:16px;color:#fff;padding:13px 20px;min-height:48px;border-radius:14px;
+    border:2px solid rgba(255,255,255,.35);background:rgba(255,255,255,.12);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.35);transition:transform .12s ease,background .15s ease,border-color .15s ease;}
+  .profileChip.sel{background:linear-gradient(180deg,#fff,#eaf3ff);color:#20304a;border-color:#fff;box-shadow:0 8px 22px rgba(0,0,0,.28);}
+  .profileChip.new{background:transparent;border-style:dashed;border-color:rgba(255,255,255,.5);}
+  @media (hover:hover){ .profileChip:hover{transform:translateY(-2px);border-color:rgba(255,255,255,.7);} }
+  .profileChip:active{transform:scale(.96);}
+  #introBtns{display:flex;gap:10px;align-items:center;justify-content:center;flex-wrap:wrap;}
+  #backBtn{min-width:auto;padding:14px 20px;}
   #logo{font-size:clamp(46px,13vw,84px);font-weight:900;letter-spacing:-2px;line-height:.95;margin-bottom:2px;
     text-shadow:0 4px 0 rgba(0,0,0,.22),0 12px 28px rgba(0,0,0,.45);}
   #logo .c1{color:#35d6ea;} #logo .c2{color:#ff5c8a;}
@@ -190,8 +201,20 @@
   #nameInput::placeholder{color:rgba(255,255,255,.6);font-weight:600;}
   #nameInput:focus{border-color:#fff;background:rgba(255,255,255,.22);}
   #playBtn{min-width:220px;margin-top:2px;}
-  #greeting{font-size:13px;font-weight:800;letter-spacing:.5px;opacity:.9;text-transform:uppercase;text-shadow:0 1px 3px rgba(0,0,0,.55);}
-  #greeting:empty{display:none;}
+  /* ===== Player switcher (menu top-left) ===== */
+  #playerBox{position:fixed;top:calc(12px + env(safe-area-inset-top,0px));left:12px;z-index:8;}
+  #playerBtn{display:flex;align-items:center;gap:6px;cursor:pointer;font:inherit;font-weight:800;font-size:15px;color:#fff;max-width:46vw;padding:9px 13px;border-radius:999px;border:1px solid rgba(255,255,255,.35);background:linear-gradient(180deg,rgba(255,255,255,.2),rgba(255,255,255,.07));-webkit-backdrop-filter:blur(14px) saturate(1.4);backdrop-filter:blur(14px) saturate(1.4);box-shadow:inset 0 1px 0 rgba(255,255,255,.5),0 4px 12px rgba(0,0,0,.18);}
+  #playerName{max-width:34vw;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  #playerBtn .chev{opacity:.85;font-size:12px;transition:transform .18s ease;}
+  #playerBtn[aria-expanded="true"] .chev{transform:rotate(180deg);}
+  #playerMenu{position:absolute;top:calc(100% + 8px);left:0;min-width:190px;max-width:74vw;padding:10px;display:flex;flex-direction:column;border-radius:16px;border:1px solid rgba(255,255,255,.4);background:linear-gradient(180deg,rgba(255,255,255,.2),rgba(255,255,255,.09));-webkit-backdrop-filter:blur(22px) saturate(1.5);backdrop-filter:blur(22px) saturate(1.5);box-shadow:inset 0 1px 0 rgba(255,255,255,.5),0 16px 40px rgba(0,0,0,.35);}
+  .pmItem{display:flex;align-items:center;gap:8px;width:100%;margin:0 0 10px 0;cursor:pointer;font:inherit;font-weight:800;font-size:15px;color:#fff;text-align:left;padding:12px 14px;border-radius:12px;border:1px solid rgba(255,255,255,.28);background:rgba(255,255,255,.12);box-shadow:inset 0 1px 0 rgba(255,255,255,.3);text-shadow:0 1px 2px rgba(0,0,0,.35);transition:transform .12s ease,background .15s ease,border-color .15s ease;}
+  .pmItem:last-child{margin-bottom:0;}
+  @media (hover:hover){ .pmItem:hover{background:rgba(255,255,255,.22);border-color:rgba(255,255,255,.55);} }
+  .pmItem:active{transform:scale(.97);}
+  .pmItem.cur{background:linear-gradient(180deg,#fff,#eaf3ff);color:#20304a;border-color:#fff;text-shadow:none;}
+  .pmItem.cur::after{content:"✓";margin-left:auto;font-size:13px;font-weight:900;}
+  .pmItem.newp{background:transparent;border-style:dashed;border-color:rgba(255,255,255,.5);box-shadow:none;margin-top:10px;}
   #nameFeedback{min-height:18px;font-size:14px;font-weight:700;text-shadow:0 1px 3px rgba(0,0,0,.5);margin-top:-6px;}
   #nameFeedback.bad{color:#ffb3b3;}
   #nameFeedback.warn{color:#ffe08a;}
@@ -201,18 +224,32 @@
 <body>
 <div id="app"></div><div id="vig"></div>
 <div id="total" class="hidden" role="status" aria-live="polite" aria-label="Total points 0"><span class="ic">★</span> 0</div>
+<div id="playerBox" class="hidden">
+  <button id="playerBtn" aria-haspopup="true" aria-expanded="false"><span id="playerName"></span><span class="chev" aria-hidden="true">▾</span></button>
+  <div id="playerMenu" class="hidden">
+    <div id="playerOptions"></div>
+    <button id="newPlayerOpt" class="pmItem newp">+ Nuevo jugador</button>
+  </div>
+</div>
 <div id="intro" class="center scrim">
-  <div id="logo"><span class="c1">LEARN</span><span class="c2">2</span><span class="c1">FLY</span></div>
-  <input id="nameInput" type="text" maxlength="16" autocomplete="off" spellcheck="false" placeholder="Tu nombre" aria-label="Nombre"/>
   <div id="langtog" class="seg"><span class="knob" aria-hidden="true"></span><button data-l="en">English</button><button data-l="es" class="on">Español</button></div>
-  <button id="playBtn" class="btn">Jugar</button>
-  <div id="nameFeedback" aria-live="polite"></div>
+  <div id="introStack">
+    <div id="logo"><span class="c1">LEARN</span><span class="c2">2</span><span class="c1">FLY</span></div>
+    <div id="pickView"><div id="profileList"></div></div>
+    <div id="newView" class="hidden">
+      <input id="nameInput" type="text" maxlength="16" autocomplete="off" spellcheck="false" placeholder="Tu nombre" aria-label="Nombre"/>
+    </div>
+    <div id="introBtns">
+      <button id="backBtn" class="btn ghost hidden">← Atrás</button>
+      <button id="playBtn" class="btn">Jugar</button>
+    </div>
+    <div id="nameFeedback" aria-live="polite"></div>
+  </div>
 </div>
 
 <!-- MENU -->
 <div id="menuUI" class="hidden">
   <div id="menuHead">
-    <div id="greeting"></div>
     <div id="kick">Pick your world</div>
     <div id="title">Art</div>
     <div id="learn">You'll learn about colors, artists, and how art is made.</div>
@@ -630,12 +667,12 @@ const TOPICS={
 };
 
 const T={
-  en:{pick:"Pick your world",start:"Start",levelClear:"Level clear",again:"Play again",change:"Change world",paused:"Paused",resume:"Resume",quit:"Quit",hi:"Hi",play:"Play",namePh:"Your name",checking:"Checking…",taken:"That name is taken, try another",available:"Name available!",needName:"Type a name first",
+  en:{pick:"Pick your world",start:"Start",levelClear:"Level clear",again:"Play again",change:"Change world",paused:"Paused",resume:"Resume",quit:"Quit",hi:"Hi",play:"Play",namePh:"Your name",checking:"Checking…",taken:"That name is taken, try another",available:"Name available!",needName:"Type a name first",newPlayer:"+ New player",back:"← Back",
     yes:"🎉 Correct!",oops:"Oops, not quite!",answerLabel:"Correct answer:",notQuite:c=>"Not quite, it's "+c+".",collected:x=>"You collected "+x+" ★",made:p=>"You made "+p+" points!",
     topics:{art:{name:"Art",char:"Pip the Butterfly",learn:"You'll learn about colors, artists, and how art is made."},
       planets:{name:"Space",char:"Bolt the Robot",learn:"You'll learn about the Sun, the planets, and the stars."},
       biology:{name:"Biology",char:"Finn the Fish",learn:"You'll learn about animals, plants, and living things."}}},
-  es:{pick:"Elige tu mundo",start:"Jugar",levelClear:"¡Nivel completado!",again:"Jugar otra vez",change:"Cambiar mundo",paused:"Pausa",resume:"Continuar",quit:"Salir",hi:"Hola",play:"Jugar",namePh:"Tu nombre",checking:"Comprobando…",taken:"Ese nombre ya existe, prueba otro",available:"¡Nombre disponible!",needName:"Escribe un nombre primero",
+  es:{pick:"Elige tu mundo",start:"Jugar",levelClear:"¡Nivel completado!",again:"Jugar otra vez",change:"Cambiar mundo",paused:"Pausa",resume:"Continuar",quit:"Salir",hi:"Hola",play:"Jugar",namePh:"Tu nombre",checking:"Comprobando…",taken:"Ese nombre ya existe, prueba otro",available:"¡Nombre disponible!",needName:"Escribe un nombre primero",newPlayer:"+ Nuevo jugador",back:"← Atrás",
     yes:"🎉 ¡Correcto!",oops:"¡Uy, casi!",answerLabel:"Respuesta correcta:",notQuite:c=>"Casi, es "+c+".",collected:x=>"Recogiste "+x+" ★",made:p=>"¡Hiciste "+p+" puntos!",
     topics:{art:{name:"Arte",char:"Pip la Mariposa",learn:"Aprenderás sobre los colores, los artistas y cómo se hace el arte."},
       planets:{name:"Espacio",char:"Bolt el Robot",learn:"Aprenderás sobre el Sol, los planetas y las estrellas."},
@@ -725,7 +762,7 @@ const QBANK={
 
 let lang='es';
 let username='';
-const SHEET_URL='https://script.google.com/macros/s/AKfycbwdVjkYYbam7vF5YopDvUwXCmm-1WWBsIOIqwylPhekit-gP1b8mTqSkWMmlzIwdzUy/exec'; // (opcional) pega aquí la URL de tu Apps Script para guardar/acumular en Google Sheets
+const SHEET_URL=''; // (opcional) pega aquí la URL de tu Apps Script para guardar/acumular en Google Sheets
 function allScores(){try{return JSON.parse(localStorage.getItem('l2f_scores')||'{}');}catch(e){return {};}}
 function loadUserPoints(name){return (allScores()[name]||0)|0;}
 function savePoints(){if(!username)return;try{const s=allScores();s[username]=totalPoints;localStorage.setItem('l2f_scores',JSON.stringify(s));}catch(e){}}
@@ -888,7 +925,7 @@ function moveKnob(seg){
 function layoutMenuHead(){
   const head=document.getElementById('menuHead'); if(!head)return;
   let bottom=0;
-  [langtogEl,totalEl].forEach(el=>{ if(el&&el.offsetWidth){ const r=el.getBoundingClientRect(); if(r.bottom>bottom)bottom=r.bottom; } });
+  [langtogEl,totalEl,playerBox].forEach(el=>{ if(el&&el.offsetWidth){ const r=el.getBoundingClientRect(); if(r.bottom>bottom)bottom=r.bottom; } });
   if(bottom>0) head.style.top=Math.round(bottom+16)+'px';
 }
 
@@ -907,8 +944,8 @@ function applyTopic(k){
   moveKnob(topicSeg);
 }
 
-function showMenu(){state='menu';level=1;pauseMenuEl.classList.add('hidden');introEl.classList.add('hidden');menuRig.visible=true;gameRig.visible=false;menuUI.classList.remove('hidden');tabsEl.classList.remove('hidden');startBtn.classList.remove('hidden');hud.classList.add('hidden');quizEl.classList.add('hidden');totalEl.classList.remove('hidden');document.getElementById('greeting').textContent=username?(T[lang].hi+', '+username+'!'):'';applyTopic(current);layoutMenuHead();}
-function startGame(m){mode=m;state='play';pauseMenuEl.classList.add('hidden');menuUI.classList.add('hidden');tabsEl.classList.add('hidden');startBtn.classList.add('hidden');quizEl.classList.add('hidden');totalEl.classList.add('hidden');menuRig.visible=false;gameRig.visible=true;hud.classList.remove('hidden');resetGame(current);}
+function showMenu(){state='menu';level=1;pauseMenuEl.classList.add('hidden');introEl.classList.add('hidden');menuRig.visible=true;gameRig.visible=false;menuUI.classList.remove('hidden');tabsEl.classList.remove('hidden');startBtn.classList.remove('hidden');hud.classList.add('hidden');quizEl.classList.add('hidden');totalEl.classList.remove('hidden');playerBox.classList.remove('hidden');updatePlayerBtn();closePlayerMenu();applyTopic(current);layoutMenuHead();}
+function startGame(m){mode=m;state='play';pauseMenuEl.classList.add('hidden');menuUI.classList.add('hidden');tabsEl.classList.add('hidden');startBtn.classList.add('hidden');quizEl.classList.add('hidden');totalEl.classList.add('hidden');playerBox.classList.add('hidden');closePlayerMenu();menuRig.visible=false;gameRig.visible=true;hud.classList.remove('hidden');resetGame(current);}
 
 function sparkleBurst(){
   const host=document.getElementById('sparkles'); if(!host)return;
@@ -968,6 +1005,8 @@ function applyLang(l){
   startBtn.textContent=t.start;
   document.getElementById('playBtn').textContent=t.play;
   nameInput.placeholder=t.namePh;
+  document.getElementById('backBtn').textContent=t.back;
+  {const np=document.querySelector('.profileChip.new'); if(np)np.textContent=t.newPlayer;}
   document.getElementById('again').textContent=t.again;
   document.getElementById('toMenu').textContent=t.change;
   document.getElementById('pauseTitle').textContent=t.paused;
@@ -1008,36 +1047,63 @@ addEventListener('keydown',e=>{const k=e.key.toLowerCase();if(k==='escape'||k===
 
 /* ===== Intro / login ===== */
 function setFeedback(msg,kind){const el=document.getElementById('nameFeedback');el.textContent=msg||'';el.className=kind||'';}
-function jsonp(url,ok,fail){
-  const cb='l2f_cb_'+Math.random().toString(36).slice(2); let done=false;
-  const s=document.createElement('script');
-  window[cb]=function(d){done=true;try{ok(d);}finally{try{delete window[cb];}catch(e){}s.remove();}};
-  s.onerror=function(){if(!done){try{delete window[cb];}catch(e){}s.remove();fail&&fail();}};
-  s.src=url+(url.indexOf('?')>=0?'&':'?')+'callback='+cb;
-  setTimeout(function(){if(!done){try{delete window[cb];}catch(e){}s.remove();fail&&fail();}},6000);
-  document.head.appendChild(s);
-}
 function enterAs(name){
   username=name; try{localStorage.setItem('l2f_user',username);}catch(e){}
-  totalPoints=loadUserPoints(username); updateTotal(); syncScore(0);
+  totalPoints=loadUserPoints(username); savePoints(); updateTotal(); syncScore(0);
   setFeedback('',''); showMenu();
 }
-let checkingName=false;
-function submitName(){
-  if(checkingName)return;
-  const v=(nameInput.value||'').trim().replace(/\s+/g,' ').slice(0,16);
-  if(!v){ setFeedback(T[lang].needName,'warn'); return; }
-  if(v in allScores()){ enterAs(v); return; }            // used on this device before -> it's you, welcome back
-  if(!SHEET_URL){ enterAs(v); return; }                  // no sheet configured -> can't check, just play
-  checkingName=true; setFeedback(T[lang].checking,'');
-  jsonp(SHEET_URL+'?check='+encodeURIComponent(v),
-    function(res){ checkingName=false; if(res && res.taken){ setFeedback(T[lang].taken,'bad'); } else { enterAs(v); } },
-    function(){ checkingName=false; enterAs(v); });        // check failed -> don't block play
+function savedUser(){try{return localStorage.getItem('l2f_user')||'';}catch(e){return '';}}
+
+/* ===== Profile picker ===== */
+const pickView=document.getElementById('pickView'), newView=document.getElementById('newView'),
+      profileList=document.getElementById('profileList'), backBtn=document.getElementById('backBtn'),
+      playBtn=document.getElementById('playBtn');
+let introMode='pick', selectedName=null;
+
+function selectProfile(name,btn){
+  selectedName=name;
+  profileList.querySelectorAll('.profileChip').forEach(x=>x.classList.remove('sel'));
+  if(btn)btn.classList.add('sel');
 }
-document.getElementById('playBtn').addEventListener('click',submitName);
-nameInput.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();submitName();}});
+function showPickView(){
+  introMode='pick'; setFeedback('','');
+  pickView.classList.remove('hidden'); newView.classList.add('hidden'); backBtn.classList.add('hidden');
+  const names=Object.keys(allScores()); const last=savedUser(); selectedName=null;
+  profileList.innerHTML='';
+  names.forEach(n=>{
+    const b=document.createElement('button'); b.className='profileChip'; b.textContent=n;
+    b.addEventListener('click',()=>selectProfile(n,b));
+    profileList.appendChild(b);
+    if(n===last)selectProfile(n,b);
+  });
+  if(!selectedName && names.length){ const first=profileList.firstChild; selectProfile(names[0],first); }
+  const np=document.createElement('button'); np.className='profileChip new'; np.textContent=T[lang].newPlayer;
+  np.addEventListener('click',openNewView); profileList.appendChild(np);
+}
+function openNewView(){                 // called from the New-player tap (user gesture -> keyboard opens)
+  introMode='new'; setFeedback('','');
+  pickView.classList.add('hidden'); newView.classList.remove('hidden');
+  backBtn.classList.toggle('hidden', Object.keys(allScores()).length===0);
+  nameInput.value=''; try{nameInput.focus();}catch(e){}
+}
+function renderIntro(){
+  if(Object.keys(allScores()).length===0){ openNewView(); backBtn.classList.add('hidden'); }
+  else showPickView();
+}
+function doPlay(){
+  if(introMode==='new'){
+    const v=(nameInput.value||'').trim().replace(/\s+/g,' ').slice(0,16);
+    if(!v){ setFeedback(T[lang].needName,'warn'); return; }
+    enterAs(v);
+  } else {
+    if(!selectedName){ setFeedback(T[lang].needName,'warn'); return; }
+    enterAs(selectedName);
+  }
+}
+playBtn.addEventListener('click',doPlay);
+backBtn.addEventListener('click',showPickView);
+nameInput.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();doPlay();}});
 nameInput.addEventListener('input',()=>setFeedback('',''));
-try{const saved=localStorage.getItem('l2f_user'); if(saved)nameInput.value=saved;}catch(e){}
 
 /* ===== Loop ===== */
 const clock=new THREE.Clock(); let t=0;
@@ -1076,7 +1142,38 @@ function tick(){
   }
   renderer.render(scene,camera);
 }
-applyLang('es'); applyTopic(current); tick();
+/* ===== Player switcher (menu) ===== */
+const playerBox=document.getElementById('playerBox'), playerBtn=document.getElementById('playerBtn'),
+      playerMenu=document.getElementById('playerMenu'), playerName=document.getElementById('playerName'),
+      playerOptions=document.getElementById('playerOptions'), newPlayerOpt=document.getElementById('newPlayerOpt');
+function updatePlayerBtn(){ playerName.textContent=username||''; }
+function closePlayerMenu(){ playerMenu.classList.add('hidden'); playerBtn.setAttribute('aria-expanded','false'); }
+function openPlayerMenu(){
+  playerOptions.innerHTML='';
+  Object.keys(allScores()).forEach(n=>{
+    const b=document.createElement('button'); b.className='pmItem'+(n===username?' cur':''); b.textContent=n;
+    b.addEventListener('click',()=>switchPlayer(n)); playerOptions.appendChild(b);
+  });
+  newPlayerOpt.textContent=T[lang].newPlayer;
+  playerMenu.classList.remove('hidden'); playerBtn.setAttribute('aria-expanded','true');
+}
+function switchPlayer(n){
+  if(n!==username){ username=n; try{localStorage.setItem('l2f_user',username);}catch(e){}
+    totalPoints=loadUserPoints(username); updateTotal(); updatePlayerBtn(); }
+  closePlayerMenu();
+}
+function newPlayerFromMenu(){                 // go back to the intro's new-player view (keyboard opens on this tap)
+  closePlayerMenu(); state='intro';
+  menuUI.classList.add('hidden');tabsEl.classList.add('hidden');startBtn.classList.add('hidden');
+  totalEl.classList.add('hidden');playerBox.classList.add('hidden');hud.classList.add('hidden');quizEl.classList.add('hidden');
+  introEl.classList.remove('hidden'); openNewView();
+}
+playerBtn.addEventListener('click',e=>{e.stopPropagation(); playerMenu.classList.contains('hidden')?openPlayerMenu():closePlayerMenu();});
+newPlayerOpt.addEventListener('click',newPlayerFromMenu);
+document.addEventListener('click',e=>{ if(!playerBox.contains(e.target))closePlayerMenu(); });
+addEventListener('keydown',e=>{ if(e.key==='Escape'&&!playerMenu.classList.contains('hidden')){e.preventDefault();closePlayerMenu();} });
+
+applyLang('es'); applyTopic(current); renderIntro(); tick();
 requestAnimationFrame(()=>{moveKnob(langtogEl);moveKnob(topicSeg);layoutMenuHead();});   // settle after fonts/layout
 addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight);moveKnob(langtogEl);moveKnob(topicSeg);layoutMenuHead();});
 </script>
