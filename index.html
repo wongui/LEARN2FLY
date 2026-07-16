@@ -725,7 +725,7 @@ const QBANK={
 
 let lang='es';
 let username='';
-const SHEET_URL=''; // (opcional) pega aquí la URL de tu Apps Script para guardar/acumular en Google Sheets
+const SHEET_URL='https://script.google.com/macros/s/AKfycbwdVjkYYbam7vF5YopDvUwXCmm-1WWBsIOIqwylPhekit-gP1b8mTqSkWMmlzIwdzUy/exec'; // (opcional) pega aquí la URL de tu Apps Script para guardar/acumular en Google Sheets
 function allScores(){try{return JSON.parse(localStorage.getItem('l2f_scores')||'{}');}catch(e){return {};}}
 function loadUserPoints(name){return (allScores()[name]||0)|0;}
 function savePoints(){if(!username)return;try{const s=allScores();s[username]=totalPoints;localStorage.setItem('l2f_scores',JSON.stringify(s));}catch(e){}}
