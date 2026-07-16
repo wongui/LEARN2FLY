@@ -8,22 +8,18 @@
 <meta name="theme-color" content="#6d3fd0"/>
 <title>Learn 2 Fly — Vuela y aprende</title>
 <meta name="description" content="Un juego para niños: vuela por 3 mundos, junta estrellas y aprende sobre arte, espacio y biología. En español e inglés."/>
-
-<!-- ⚠️ REEMPLAZA "USUARIO" por tu usuario/dominio real (ver README.md) -->
-<meta property="og:url" content="https://github.com/wongui/LEARN2FLY/"/>
+<meta property="og:url" content="https://USUARIO.github.io/learn2fly/"/>
 <meta property="og:type" content="website"/>
 <meta property="og:title" content="Learn 2 Fly — Vuela y aprende"/>
 <meta property="og:description" content="Vuela por 3 mundos, junta estrellas y aprende arte, espacio y biología. ¡Para niños, en español e inglés!"/>
-<meta property="og:image" content="https://raw.githubusercontent.com/wongui/LEARN2FLY/refs/heads/main/og-image.png"/>
+<meta property="og:image" content="https://USUARIO.github.io/learn2fly/og-image.png"/>
 <meta property="og:image:width" content="1200"/>
 <meta property="og:image:height" content="800"/>
 <meta property="og:locale" content="es_ES"/>
-
 <meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:title" content="Learn 2 Fly — Vuela y aprende"/>
 <meta name="twitter:description" content="Vuela, junta estrellas y aprende arte, espacio y biología."/>
-<meta name="twitter:image" content="https://raw.githubusercontent.com/wongui/LEARN2FLY/refs/heads/main/og-image.png"/>
-
+<meta name="twitter:image" content="https://USUARIO.github.io/learn2fly/og-image.png"/>
 <link rel="icon" href="favicon.png" type="image/png"/>
 <link rel="apple-touch-icon" href="apple-touch-icon.png"/>
 <link rel="manifest" href="manifest.json"/>
@@ -72,7 +68,10 @@
   .qbtn:disabled{cursor:default;}
   #feedback{max-width:420px;font-size:16px;line-height:1.5;padding:14px 16px;border-radius:14px;margin-top:6px;}
   #feedback.good{background:#1f3a24;color:#d6f7db;} #feedback.bad{background:#3a1f1f;color:#f7d6d6;}
-  #feedback .big{font-size:19px;font-weight:800;display:block;margin-bottom:4px;}
+  #feedback .big{font-size:22px;font-weight:800;display:block;margin-bottom:6px;}
+  #feedback .ans{font-size:17px;margin-bottom:6px;}
+  #feedback .ans b{font-weight:800;}
+  #feedback .why{font-size:15px;line-height:1.45;opacity:.95;}
   #feedback .pts{margin-top:10px;font-weight:700;opacity:.9;}
   #total{position:fixed;top:16px;right:16px;z-index:7;background:rgba(0,0,0,.45);border:1px solid rgba(255,255,255,.25);border-radius:999px;padding:8px 14px;font-size:14px;font-weight:800;backdrop-filter:blur(8px);pointer-events:none;}
 
@@ -113,7 +112,7 @@
   }
   @media (prefers-reduced-motion: reduce){ .btn,.tab,.qbtn{transition:none;} }
   /* ===== Segmented selector (shared: language toggle + topic picker) ===== */
-  #langtog{position:fixed;top:14px;left:14px;z-index:7;}
+  #langtog{margin:2px 0;}
   .seg{position:relative;display:inline-flex;padding:5px;border-radius:999px;pointer-events:auto;
     background:linear-gradient(180deg,rgba(255,255,255,.22),rgba(255,255,255,.08));
     border:1px solid rgba(255,255,255,.5);
@@ -167,30 +166,67 @@
     .btn:hover,.qbtn:hover,.seg button:hover,.btn:active,.qbtn:active,.seg button:active{transform:none;}
     #startBtn:hover,#startBtn:active{transform:translateX(-50%);}
   }
+
+  /* ===== Pause ===== */
+  #pauseBtn{pointer-events:auto;cursor:pointer;flex:none;width:42px;height:42px;border-radius:999px;
+    border:1px solid rgba(255,255,255,.35);color:#fff;display:flex;align-items:center;justify-content:center;
+    background:linear-gradient(180deg,rgba(255,255,255,.18),rgba(255,255,255,.06));
+    -webkit-backdrop-filter:blur(16px) saturate(1.5);backdrop-filter:blur(16px) saturate(1.5);
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.55),0 4px 12px rgba(0,0,0,.2);transition:transform .15s ease,filter .15s ease;}
+  #pauseBtn svg{width:15px;height:15px;}
+  @media (hover:hover){ #pauseBtn:hover{transform:translateY(-1px);filter:brightness(1.08);} }
+  #pauseBtn:active{transform:scale(.94);}
+  #pauseTitle{font-size:34px;font-weight:900;letter-spacing:-1px;text-shadow:0 2px 6px rgba(0,0,0,.5);margin-bottom:12px;}
+  #pauseMenu .btn{min-width:220px;margin-top:6px;}
+
+  /* ===== Intro / login screen ===== */
+  #intro{gap:18px;}
+  #logo{font-size:clamp(46px,13vw,84px);font-weight:900;letter-spacing:-2px;line-height:.95;margin-bottom:2px;
+    text-shadow:0 4px 0 rgba(0,0,0,.22),0 12px 28px rgba(0,0,0,.45);}
+  #logo .c1{color:#35d6ea;} #logo .c2{color:#ff5c8a;}
+  #nameInput{width:min(340px,82vw);padding:14px 18px;font-size:18px;font-weight:700;text-align:center;color:#fff;
+    border-radius:14px;border:2px solid rgba(255,255,255,.5);background:rgba(255,255,255,.14);outline:none;
+    -webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);box-shadow:inset 0 1px 0 rgba(255,255,255,.4);}
+  #nameInput::placeholder{color:rgba(255,255,255,.6);font-weight:600;}
+  #nameInput:focus{border-color:#fff;background:rgba(255,255,255,.22);}
+  #playBtn{min-width:220px;margin-top:2px;}
+  #greeting{font-size:13px;font-weight:800;letter-spacing:.5px;opacity:.9;text-transform:uppercase;text-shadow:0 1px 3px rgba(0,0,0,.55);}
+  #greeting:empty{display:none;}
+  #nameFeedback{min-height:18px;font-size:14px;font-weight:700;text-shadow:0 1px 3px rgba(0,0,0,.5);margin-top:-6px;}
+  #nameFeedback.bad{color:#ffb3b3;}
+  #nameFeedback.warn{color:#ffe08a;}
+  #nameFeedback.ok{color:#8dffc0;}
 </style>
 </head>
 <body>
 <div id="app"></div><div id="vig"></div>
-<div id="total" role="status" aria-live="polite" aria-label="Total points 0"><span class="ic">★</span> 0</div>
-<div id="langtog" class="seg"><span class="knob" aria-hidden="true"></span><button data-l="en">English</button><button data-l="es" class="on">Español</button></div>
+<div id="total" class="hidden" role="status" aria-live="polite" aria-label="Total points 0"><span class="ic">★</span> 0</div>
+<div id="intro" class="center scrim">
+  <div id="logo"><span class="c1">LEARN</span><span class="c2">2</span><span class="c1">FLY</span></div>
+  <input id="nameInput" type="text" maxlength="16" autocomplete="off" spellcheck="false" placeholder="Tu nombre" aria-label="Nombre"/>
+  <div id="langtog" class="seg"><span class="knob" aria-hidden="true"></span><button data-l="en">English</button><button data-l="es" class="on">Español</button></div>
+  <button id="playBtn" class="btn">Jugar</button>
+  <div id="nameFeedback" aria-live="polite"></div>
+</div>
 
 <!-- MENU -->
-<div id="menuUI">
+<div id="menuUI" class="hidden">
   <div id="menuHead">
+    <div id="greeting"></div>
     <div id="kick">Pick your world</div>
     <div id="title">Art</div>
     <div id="learn">You'll learn about colors, artists, and how art is made.</div>
   </div>
 </div>
-<div id="tabs">
+<div id="tabs" class="hidden">
   <div id="topicSeg" class="seg" role="group" aria-label="Choose a world">
     <span class="knob" aria-hidden="true"></span>
-    <button class="on" data-t="art"><span aria-hidden="true" class="dot" style="background:#ff5ca8"></span><span class="lbl">Art</span></button>
+    <button class="on" data-t="biology"><span aria-hidden="true" class="dot" style="background:#ff8c42"></span><span class="lbl">Biology</span></button>
     <button data-t="planets"><span aria-hidden="true" class="dot" style="background:#8b5cf6"></span><span class="lbl">Space</span></button>
-    <button data-t="biology"><span aria-hidden="true" class="dot" style="background:#ff8c42"></span><span class="lbl">Biology</span></button>
+    <button data-t="art"><span aria-hidden="true" class="dot" style="background:#ff5ca8"></span><span class="lbl">Art</span></button>
   </div>
 </div>
-<button id="startBtn" class="btn">Start</button>
+<button id="startBtn" class="btn hidden">Start</button>
 
 
 <!-- HUD -->
@@ -199,6 +235,7 @@
   <div id="hearts" role="img" aria-label="Lives: 3">♥♥♥</div>
   <div id="bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-label="Level progress"><div id="barfill"></div></div>
   <div id="score" aria-label="Points this run: 0"><span class="ic">★</span> 0</div>
+  <button id="pauseBtn" aria-label="Pause"><svg viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4" width="4.5" height="16" rx="1.6"/><rect x="13.5" y="4" width="4.5" height="16" rx="1.6"/></svg></button>
 </div>
 
 <!-- QUESTION -->
@@ -213,6 +250,13 @@
     <button id="again" class="btn hidden">Play again</button>
     <button id="toMenu" class="btn ghost hidden">Change world</button>
   </div>
+</div>
+
+<!-- PAUSE -->
+<div id="pauseMenu" class="center scrim hidden">
+  <div id="pauseTitle">Pausa</div>
+  <button id="resumeBtn" class="btn">Continuar</button>
+  <button id="quitBtn" class="btn ghost">Salir</button>
 </div>
 
 <script type="importmap">
@@ -586,13 +630,13 @@ const TOPICS={
 };
 
 const T={
-  en:{pick:"Pick your world",start:"Start",levelClear:"Level clear",again:"Play again",change:"Change world",
-    yes:"🎉 Yes!",notQuite:c=>"Not quite, it's "+c+".",collected:x=>"You collected "+x+" ★",made:p=>"You made "+p+" points!",
+  en:{pick:"Pick your world",start:"Start",levelClear:"Level clear",again:"Play again",change:"Change world",paused:"Paused",resume:"Resume",quit:"Quit",hi:"Hi",play:"Play",namePh:"Your name",checking:"Checking…",taken:"That name is taken, try another",available:"Name available!",needName:"Type a name first",
+    yes:"🎉 Correct!",oops:"Oops, not quite!",answerLabel:"Correct answer:",notQuite:c=>"Not quite, it's "+c+".",collected:x=>"You collected "+x+" ★",made:p=>"You made "+p+" points!",
     topics:{art:{name:"Art",char:"Pip the Butterfly",learn:"You'll learn about colors, artists, and how art is made."},
       planets:{name:"Space",char:"Bolt the Robot",learn:"You'll learn about the Sun, the planets, and the stars."},
       biology:{name:"Biology",char:"Finn the Fish",learn:"You'll learn about animals, plants, and living things."}}},
-  es:{pick:"Elige tu mundo",start:"Jugar",levelClear:"¡Nivel completado!",again:"Jugar otra vez",change:"Cambiar mundo",
-    yes:"🎉 ¡Sí!",notQuite:c=>"Casi, es "+c+".",collected:x=>"Recogiste "+x+" ★",made:p=>"¡Hiciste "+p+" puntos!",
+  es:{pick:"Elige tu mundo",start:"Jugar",levelClear:"¡Nivel completado!",again:"Jugar otra vez",change:"Cambiar mundo",paused:"Pausa",resume:"Continuar",quit:"Salir",hi:"Hola",play:"Jugar",namePh:"Tu nombre",checking:"Comprobando…",taken:"Ese nombre ya existe, prueba otro",available:"¡Nombre disponible!",needName:"Escribe un nombre primero",
+    yes:"🎉 ¡Correcto!",oops:"¡Uy, casi!",answerLabel:"Respuesta correcta:",notQuite:c=>"Casi, es "+c+".",collected:x=>"Recogiste "+x+" ★",made:p=>"¡Hiciste "+p+" puntos!",
     topics:{art:{name:"Arte",char:"Pip la Mariposa",learn:"Aprenderás sobre los colores, los artistas y cómo se hace el arte."},
       planets:{name:"Espacio",char:"Bolt el Robot",learn:"Aprenderás sobre el Sol, los planetas y las estrellas."},
       biology:{name:"Biología",char:"Finn el Pez",learn:"Aprenderás sobre los animales, las plantas y los seres vivos."}}}
@@ -604,43 +648,89 @@ const QBANK={
     {q:"Blue paint plus yellow paint makes...?",a:[["Green",1],["Purple",0],["Orange",0]],why:"Blue and yellow mix together into green."},
     {q:"A picture of a person's face is called a...?",a:[["Portrait",1],["Landscape",0],["Still life",0]],why:"A portrait shows a person, usually their face."},
     {q:"What holds and mixes a painter's colors?",a:[["A palette",1],["A ladder",0],["A pillow",0]],why:"A palette is the board painters use to hold and mix paint."},
-    {q:"A picture made of many tiny tiles is a...?",a:[["Mosaic",1],["Sketch",0],["Shadow",0]],why:"A mosaic is built from lots of little pieces put together."}],
+    {q:"A picture made of many tiny tiles is a...?",a:[["Mosaic",1],["Sketch",0],["Shadow",0]],why:"A mosaic is built from lots of little pieces put together."},
+    {q:"Red paint plus yellow paint makes...?",a:[["Orange",1],["Green",0],["Blue",0]],why:"Red and yellow mix into orange."},
+    {q:"Red plus blue makes...?",a:[["Purple",1],["Green",0],["Yellow",0]],why:"Red and blue mix into purple."},
+    {q:"A painting of mountains and trees is a...?",a:[["Landscape",1],["Portrait",0],["Mosaic",0]],why:"A landscape shows outdoor scenery like mountains and fields."},
+    {q:"What do you dip in paint to make marks?",a:[["A brush",1],["A spoon",0],["A shoe",0]],why:"A brush holds paint and makes strokes."},
+    {q:"How many colors are in a rainbow?",a:[["Seven",1],["Two",0],["Twenty",0]],why:"A rainbow has seven colors."},
+    {q:"Which are warm colors?",a:[["Red and orange",1],["Blue and green",0],["Black and gray",0]],why:"Reds, oranges and yellows are called warm colors."},
+    {q:"Art you can walk all around is a...?",a:[["Sculpture",1],["Photo",0],["Drawing",0]],why:"A sculpture is a 3D artwork you can see from every side."}],
   es:[
     {q:"¿Cuáles son los tres colores primarios?",a:[["Rojo, amarillo, azul",1],["Verde, rosa, café",0],["Negro, blanco, gris",0]],why:"Con rojo, amarillo y azul puedes mezclar casi todos los demás colores."},
     {q:"¿Qué color sale al mezclar azul y amarillo?",a:[["Verde",1],["Morado",0],["Naranja",0]],why:"El azul y el amarillo se mezclan y forman verde."},
     {q:"Un dibujo de la cara de una persona se llama...",a:[["Retrato",1],["Paisaje",0],["Bodegón",0]],why:"Un retrato muestra a una persona, casi siempre su cara."},
     {q:"¿Qué usa un pintor para mezclar sus colores?",a:[["Una paleta",1],["Una escalera",0],["Una almohada",0]],why:"La paleta es la tabla donde el pintor mezcla la pintura."},
-    {q:"Un dibujo hecho con muchas piezas pequeñas es un...",a:[["Mosaico",1],["Boceto",0],["Sombra",0]],why:"Un mosaico se arma con muchas piezas pequeñas juntas."}]},
+    {q:"Un dibujo hecho con muchas piezas pequeñas es un...",a:[["Mosaico",1],["Boceto",0],["Sombra",0]],why:"Un mosaico se arma con muchas piezas pequeñas juntas."},
+    {q:"El rojo más el amarillo forman...?",a:[["Naranja",1],["Verde",0],["Azul",0]],why:"El rojo y el amarillo se mezclan y forman naranja."},
+    {q:"El rojo más el azul forman...?",a:[["Morado",1],["Verde",0],["Amarillo",0]],why:"El rojo y el azul forman morado."},
+    {q:"Una pintura de montañas y árboles es un...?",a:[["Paisaje",1],["Retrato",0],["Mosaico",0]],why:"Un paisaje muestra la naturaleza, como montañas y campos."},
+    {q:"¿Qué mojas en pintura para pintar?",a:[["Un pincel",1],["Una cuchara",0],["Un zapato",0]],why:"El pincel toma la pintura y hace trazos."},
+    {q:"¿Cuántos colores tiene un arcoíris?",a:[["Siete",1],["Dos",0],["Veinte",0]],why:"El arcoíris tiene siete colores."},
+    {q:"¿Cuáles son colores cálidos?",a:[["Rojo y naranja",1],["Azul y verde",0],["Negro y gris",0]],why:"Los rojos, naranjas y amarillos son colores cálidos."},
+    {q:"El arte que puedes rodear por completo es una...?",a:[["Escultura",1],["Foto",0],["Dibujo",0]],why:"Una escultura es arte en 3D que puedes ver por todos lados."}]},
   planets:{en:[
     {q:"Which planet do we live on?",a:[["Earth",1],["Mars",0],["Jupiter",0]],why:"Earth is our home, the third planet from the Sun."},
     {q:"The closest star to us is the...?",a:[["Sun",1],["Moon",0],["North Star",0]],why:"The Sun is a star, and the nearest one to Earth."},
     {q:"Which planet is the biggest?",a:[["Jupiter",1],["Earth",0],["Mars",0]],why:"Jupiter is the largest planet in our solar system."},
     {q:"The Moon travels around the...?",a:[["Earth",1],["Sun",0],["Mars",0]],why:"The Moon orbits our planet, Earth."},
-    {q:"A space rock that circles the Sun is an...?",a:[["Asteroid",1],["Igloo",0],["Anchor",0]],why:"Asteroids are rocks that orbit the Sun."}],
+    {q:"A space rock that circles the Sun is an...?",a:[["Asteroid",1],["Igloo",0],["Anchor",0]],why:"Asteroids are rocks that orbit the Sun."},
+    {q:"Which planet is closest to the Sun?",a:[["Mercury",1],["Earth",0],["Neptune",0]],why:"Mercury is the closest planet to the Sun."},
+    {q:"Which planet is called the Red Planet?",a:[["Mars",1],["Venus",0],["Earth",0]],why:"Mars looks red because of its rusty dust."},
+    {q:"How many planets are in our solar system?",a:[["Eight",1],["Three",0],["Twenty",0]],why:"Eight planets orbit the Sun."},
+    {q:"People who travel to space are called...?",a:[["Astronauts",1],["Farmers",0],["Divers",0]],why:"Astronauts are trained to travel and work in space."},
+    {q:"The planet with big bright rings is...?",a:[["Saturn",1],["Earth",0],["Mercury",0]],why:"Saturn is famous for its bright rings."},
+    {q:"What gives Earth light and warmth?",a:[["The Sun",1],["The Moon",0],["A cloud",0]],why:"The Sun gives Earth light and heat."},
+    {q:"What shape is planet Earth?",a:[["Round like a ball",1],["Flat like paper",0],["A square",0]],why:"Earth is shaped like a giant ball, a sphere."}],
   es:[
     {q:"¿En qué planeta vivimos?",a:[["La Tierra",1],["Marte",0],["Júpiter",0]],why:"La Tierra es nuestro hogar, el tercer planeta desde el Sol."},
     {q:"La estrella más cercana a nosotros es el...",a:[["Sol",1],["la Luna",0],["la Estrella Polar",0]],why:"El Sol es una estrella, y la más cercana a la Tierra."},
     {q:"¿Cuál es el planeta más grande?",a:[["Júpiter",1],["La Tierra",0],["Marte",0]],why:"Júpiter es el planeta más grande del sistema solar."},
     {q:"La Luna gira alrededor de...",a:[["la Tierra",1],["el Sol",0],["Marte",0]],why:"La Luna orbita nuestro planeta, la Tierra."},
-    {q:"Una roca del espacio que gira alrededor del Sol es un...",a:[["Asteroide",1],["Iglú",0],["Ancla",0]],why:"Los asteroides son rocas que orbitan el Sol."}]},
+    {q:"Una roca del espacio que gira alrededor del Sol es un...",a:[["Asteroide",1],["Iglú",0],["Ancla",0]],why:"Los asteroides son rocas que orbitan el Sol."},
+    {q:"¿Qué planeta está más cerca del Sol?",a:[["Mercurio",1],["La Tierra",0],["Neptuno",0]],why:"Mercurio es el planeta más cercano al Sol."},
+    {q:"¿Qué planeta es el Planeta Rojo?",a:[["Marte",1],["Venus",0],["La Tierra",0]],why:"Marte se ve rojo por su polvo oxidado."},
+    {q:"¿Cuántos planetas hay en el sistema solar?",a:[["Ocho",1],["Tres",0],["Veinte",0]],why:"Ocho planetas giran alrededor del Sol."},
+    {q:"A quienes viajan al espacio se les llama...?",a:[["Astronautas",1],["Granjeros",0],["Buzos",0]],why:"Los astronautas viajan y trabajan en el espacio."},
+    {q:"El planeta con grandes anillos brillantes es...?",a:[["Saturno",1],["La Tierra",0],["Mercurio",0]],why:"Saturno es famoso por sus anillos brillantes."},
+    {q:"¿Qué le da luz y calor a la Tierra?",a:[["El Sol",1],["La Luna",0],["Una nube",0]],why:"El Sol le da luz y calor a la Tierra."},
+    {q:"¿Qué forma tiene la Tierra?",a:[["Redonda como pelota",1],["Plana como papel",0],["Cuadrada",0]],why:"La Tierra tiene forma de pelota gigante, una esfera."}]},
   biology:{en:[
     {q:"What do plants need from the Sun?",a:[["Light",1],["Ice",0],["Music",0]],why:"Plants use sunlight to make their own food."},
     {q:"A baby frog is called a...?",a:[["Tadpole",1],["Puppy",0],["Cub",0]],why:"Frogs begin life as tadpoles in the water."},
     {q:"Which part of a plant drinks water from the soil?",a:[["Roots",1],["Petals",0],["Leaves",0]],why:"Roots pull up water and food from the ground."},
     {q:"How do fish breathe underwater?",a:[["With gills",1],["With ears",0],["With fins",0]],why:"Fish use gills to take oxygen from the water."},
-    {q:"Which of these is an insect?",a:[["Butterfly",1],["Shark",0],["Turtle",0]],why:"Butterflies are insects, with six legs and wings."}],
+    {q:"Which of these is an insect?",a:[["Butterfly",1],["Shark",0],["Turtle",0]],why:"Butterflies are insects, with six legs and wings."},
+    {q:"How many legs does an insect have?",a:[["Six",1],["Four",0],["Ten",0]],why:"All insects have six legs."},
+    {q:"Which animal gives us milk?",a:[["Cow",1],["Snake",0],["Fish",0]],why:"Cows make milk for their babies and for us."},
+    {q:"A caterpillar turns into a...?",a:[["Butterfly",1],["Bird",0],["Bee",0]],why:"A caterpillar changes into a butterfly."},
+    {q:"Which of these is a mammal?",a:[["Dog",1],["Frog",0],["Fish",0]],why:"Dogs are mammals: they have fur and drink milk as babies."},
+    {q:"What do bees make?",a:[["Honey",1],["Bread",0],["Paper",0]],why:"Bees collect nectar and make honey."},
+    {q:"Which plant part is green and catches sunlight?",a:[["Leaves",1],["Roots",0],["Seeds",0]],why:"Leaves catch sunlight to help the plant make food."},
+    {q:"Where do most fish live?",a:[["In water",1],["In trees",0],["Underground",0]],why:"Fish live in water and breathe with gills."}],
   es:[
     {q:"¿Qué necesitan las plantas del Sol?",a:[["Luz",1],["Hielo",0],["Música",0]],why:"Las plantas usan la luz del sol para hacer su alimento."},
     {q:"Una rana bebé se llama...",a:[["Renacuajo",1],["Cachorro",0],["Osezno",0]],why:"Las ranas empiezan su vida como renacuajos en el agua."},
     {q:"¿Qué parte de la planta toma agua de la tierra?",a:[["Las raíces",1],["Los pétalos",0],["Las hojas",0]],why:"Las raíces absorben agua y alimento del suelo."},
     {q:"¿Cómo respiran los peces bajo el agua?",a:[["Con branquias",1],["Con orejas",0],["Con aletas",0]],why:"Los peces usan branquias para tomar oxígeno del agua."},
-    {q:"¿Cuál de estos es un insecto?",a:[["Mariposa",1],["Tiburón",0],["Tortuga",0]],why:"Las mariposas son insectos, con seis patas y alas."}]}
+    {q:"¿Cuál de estos es un insecto?",a:[["Mariposa",1],["Tiburón",0],["Tortuga",0]],why:"Las mariposas son insectos, con seis patas y alas."},
+    {q:"¿Cuántas patas tiene un insecto?",a:[["Seis",1],["Cuatro",0],["Diez",0]],why:"Todos los insectos tienen seis patas."},
+    {q:"¿Qué animal nos da leche?",a:[["La vaca",1],["La serpiente",0],["El pez",0]],why:"Las vacas dan leche para sus crías y para nosotros."},
+    {q:"Una oruga se convierte en...?",a:[["Mariposa",1],["Pájaro",0],["Abeja",0]],why:"La oruga se transforma en mariposa."},
+    {q:"¿Cuál de estos es un mamífero?",a:[["El perro",1],["La rana",0],["El pez",0]],why:"Los perros son mamíferos: tienen pelo y toman leche de bebés."},
+    {q:"¿Qué producen las abejas?",a:[["Miel",1],["Pan",0],["Papel",0]],why:"Las abejas recogen néctar y hacen miel."},
+    {q:"¿Qué parte de la planta es verde y atrapa la luz?",a:[["Las hojas",1],["Las raíces",0],["Las semillas",0]],why:"Las hojas atrapan la luz para que la planta haga alimento."},
+    {q:"¿Dónde viven la mayoría de los peces?",a:[["En el agua",1],["En los árboles",0],["Bajo tierra",0]],why:"Los peces viven en el agua y respiran con branquias."}]}
 };
 
 let lang='es';
-function loadPoints(){try{return parseInt(localStorage.getItem('flyLearnPoints')||'0',10)||0;}catch(e){return 0;}}
-function savePoints(){try{localStorage.setItem('flyLearnPoints',String(totalPoints));}catch(e){}}
-let totalPoints=loadPoints();
+let username='';
+const SHEET_URL=''; // (opcional) pega aquí la URL de tu Apps Script para guardar/acumular en Google Sheets
+function allScores(){try{return JSON.parse(localStorage.getItem('l2f_scores')||'{}');}catch(e){return {};}}
+function loadUserPoints(name){return (allScores()[name]||0)|0;}
+function savePoints(){if(!username)return;try{const s=allScores();s[username]=totalPoints;localStorage.setItem('l2f_scores',JSON.stringify(s));}catch(e){}}
+let totalPoints=0;
+function syncScore(earned){ if(!SHEET_URL||!username||!earned)return; try{fetch(SHEET_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({name:username,earned:earned})});}catch(e){} }
 function updateTotal(){const el=document.getElementById('total');el.innerHTML='<span class="ic">★</span> '+totalPoints;el.setAttribute('aria-label','Total points '+totalPoints);}
 
 
@@ -678,16 +768,17 @@ const menuProps=buildMenuProps();
 const gameRig=new THREE.Group(); gameRig.visible=false; scene.add(gameRig);
 const LANE_X=[-1.5,0,1.5], laneW=1.5, CEIL=6.0;
 const K={speed:11,gravity:22,flap:8.2,yMin:1.0,yMax:5.0,laneLerp:0.22,levelLength:380,hitR:0.55,spawnAtZ:-115,
-  gapScale:1,starMul:1,goldChance:0,twoLaneBias:0.5,runIn:12};
+  gapScale:1,starMul:1,goldChance:0,twoLaneBias:0.5,runIn:12,coinChance:0.6};
 let level=1;
 // Per-level progression: faster, longer, tighter, more (and richer) stars. All values ease toward a cap so it stays fair.
 function difficulty(L){return{
-  speed:      Math.min(11 + (L-1)*0.9, 17),
-  levelLength:380 + (L-1)*70,
-  gapScale:   Math.max(1 - (L-1)*0.05, 0.66),
+  speed:      Math.min(11 + (L-1)*0.45, 16),
+  levelLength:380 + (L-1)*55,
+  gapScale:   Math.max(1 - (L-1)*0.025, 0.72),
   starMul:    Math.min(1 + (L-1)*0.15, 1.8),
   goldChance: L>=2 ? Math.min(0.10 + (L-2)*0.04, 0.30) : 0,   // gold (double-point) stars unlock at level 2
-  twoLaneBias:Math.min(0.5 + (L-1)*0.07, 0.85)                // higher levels close two lanes more often
+  coinChance: Math.max(0.28, 0.42 - (L-1)*0.013),             // fewer runs carry stars as levels grow (keeps totals gentle)
+  twoLaneBias:Math.min(0.5 + (L-1)*0.035, 0.80)               // higher levels close two lanes more often
 };}
 
 const gFloor=new THREE.Mesh(new THREE.PlaneGeometry(30,600),SM(0x333947)); gFloor.rotation.x=-Math.PI/2; gFloor.position.set(0,0,-160); gFloor.receiveShadow=true; gameRig.add(gFloor);
@@ -721,7 +812,7 @@ function addStar(x,y,z,kind){
   gameRig.add(s); stars.push(s);
 }
 function starKind(){return Math.random()<K.goldChance?'gold':'normal';}
-function coinsLane(li,y,z,n){n=Math.max(1,Math.round((n||4)*K.starMul/4));for(let i=0;i<n;i++)addStar(LANE_X[li],y,z+7+i*2.4,starKind());}
+function coinsLane(li,y,z,n){if(Math.random()>=K.coinChance)return;const cnt=Math.random()<0.15?2:1;for(let i=0;i<cnt;i++)addStar(LANE_X[li],y,z+7+i*2.4,starKind());}
 
 const PHRASES=[
   [['fly',13],['fly',13],['fly',15],['rest',22]],
@@ -751,7 +842,7 @@ function laneSet(twoBias){
 }
 function spawnEvent(type,z){
   // Every LOW obstacle top stays <=2.6; HIGH (ceil) walls hang from 3.3 to the ceiling and fade once behind you.
-  if(type==='rest'){const n=Math.max(1,Math.round((4+(K.starMul-1)*3)/4));for(let i=0;i<n;i++){const y=2.7+(n>1?Math.sin(i/(n-1)*Math.PI)*1.3:0);addStar(LANE_X[1],y,z+7+i*2.4,starKind());}return;} // breather: coin arc, no walls
+  if(type==='rest'){const n=Math.random()<0.30?2:1;for(let i=0;i<n;i++){const y=2.7+(n>1?Math.sin(i/(n-1)*Math.PI)*1.3:0);addStar(LANE_X[1],y,z+7+i*2.4,starKind());}return;} // breather: small coin arc, no walls
   if(type==='fly'){LANE_X.forEach(x=>addWall(x,laneW,0,2.4,z));coinsLane(1,3.6,z);}
   else if(type==='lane'){const cl=laneSet(K.twoLaneBias);cl.forEach(li=>addWall(LANE_X[li],laneW,0,2.4,z));const open=[0,1,2].filter(i=>!cl.includes(i));if(open.length)coinsLane(open[(Math.random()*open.length)|0],1.6,z);else coinsLane(1,3.5,z);}
   else if(type==='hump'){const hs=[0,1,2].filter(()=>Math.random()<0.6);if(hs.length===0)hs.push((Math.random()*3)|0);hs.forEach(li=>addWall(LANE_X[li],laneW,0,1.5,z));const openL=[0,1,2].find(i=>!hs.includes(i));coinsLane(openL===undefined?1:openL,openL===undefined?3.2:1.4,z);}
@@ -764,7 +855,7 @@ let mode='normal', vy=0, lane=1, traveled=0, hearts=3, invuln=0, score=0, nextSp
 function clearGame(){obstacles.forEach(o=>{if(o.userData.fade&&o.material)o.material.dispose();gameRig.remove(o);});obstacles.length=0;stars.forEach(s=>gameRig.remove(s));stars.length=0;if(finishArch){gameRig.remove(finishArch);finishArch=null;}}
 function resetGame(topicKey){
   const p=TOPICS[topicKey]; themeGame(p);
-  const d=difficulty(level); K.speed=d.speed; K.levelLength=d.levelLength; K.gapScale=d.gapScale; K.starMul=d.starMul; K.goldChance=d.goldChance; K.twoLaneBias=d.twoLaneBias;
+  const d=difficulty(level); K.speed=d.speed; K.levelLength=d.levelLength; K.gapScale=d.gapScale; K.starMul=d.starMul; K.goldChance=d.goldChance; K.twoLaneBias=d.twoLaneBias; K.coinChance=d.coinChance;
   if(levelTagEl)levelTagEl.textContent='Lv '+level;
   clearGame(); phrase.length=0;
   if(playerChar)playerG.remove(playerChar);
@@ -783,6 +874,7 @@ function loseHeart(){if(invuln>0)return;hearts--;invuln=1.1;heartsEl.textContent
 const heartsEl=document.getElementById('hearts'), barfill=document.getElementById('barfill'), scoreEl=document.getElementById('score'), barEl=document.getElementById('bar'), levelTagEl=document.getElementById('levelTag');
 const hud=document.getElementById('hud'), menuUI=document.getElementById('menuUI'), tabsEl=document.getElementById('tabs'), startBtn=document.getElementById('startBtn');
 const quizEl=document.getElementById('quiz'), totalEl=document.getElementById('total'), langtogEl=document.getElementById('langtog');
+const introEl=document.getElementById('intro'), nameInput=document.getElementById('nameInput');
 const topicSeg=document.getElementById('topicSeg');
 function moveKnob(seg){
   if(!seg||!seg.offsetWidth)return;                  // skip while hidden (offsets would be 0)
@@ -800,7 +892,7 @@ function layoutMenuHead(){
   if(bottom>0) head.style.top=Math.round(bottom+16)+'px';
 }
 
-let state='menu', current='art', qIndex={art:0,planets:0,biology:0};
+let state='intro', current='biology', qIndex={art:0,planets:0,biology:0};
 
 function applyTopic(k){
   current=k; const p=TOPICS[k];
@@ -815,8 +907,8 @@ function applyTopic(k){
   moveKnob(topicSeg);
 }
 
-function showMenu(){state='menu';level=1;menuRig.visible=true;gameRig.visible=false;menuUI.classList.remove('hidden');tabsEl.classList.remove('hidden');startBtn.classList.remove('hidden');hud.classList.add('hidden');quizEl.classList.add('hidden');langtogEl.classList.remove('hidden');totalEl.classList.remove('hidden');applyTopic(current);layoutMenuHead();}
-function startGame(m){mode=m;state='play';menuUI.classList.add('hidden');tabsEl.classList.add('hidden');startBtn.classList.add('hidden');quizEl.classList.add('hidden');langtogEl.classList.add('hidden');totalEl.classList.add('hidden');menuRig.visible=false;gameRig.visible=true;hud.classList.remove('hidden');resetGame(current);}
+function showMenu(){state='menu';level=1;pauseMenuEl.classList.add('hidden');introEl.classList.add('hidden');menuRig.visible=true;gameRig.visible=false;menuUI.classList.remove('hidden');tabsEl.classList.remove('hidden');startBtn.classList.remove('hidden');hud.classList.add('hidden');quizEl.classList.add('hidden');totalEl.classList.remove('hidden');document.getElementById('greeting').textContent=username?(T[lang].hi+', '+username+'!'):'';applyTopic(current);layoutMenuHead();}
+function startGame(m){mode=m;state='play';pauseMenuEl.classList.add('hidden');menuUI.classList.add('hidden');tabsEl.classList.add('hidden');startBtn.classList.add('hidden');quizEl.classList.add('hidden');totalEl.classList.add('hidden');menuRig.visible=false;gameRig.visible=true;hud.classList.remove('hidden');resetGame(current);}
 
 function sparkleBurst(){
   const host=document.getElementById('sparkles'); if(!host)return;
@@ -834,27 +926,38 @@ function sparkleBurst(){
   }
   setTimeout(()=>{if(host)host.innerHTML='';},1200);
 }
+const qBag={art:[],planets:[],biology:[]}, qLast={art:-1,planets:-1,biology:-1};
+function nextQuestion(topic,n){
+  if(qBag[topic].length===0){
+    const idx=[...Array(n).keys()];
+    for(let i=idx.length-1;i>0;i--){const j=(Math.random()*(i+1))|0;[idx[i],idx[j]]=[idx[j],idx[i]];}
+    if(n>1 && idx[0]===qLast[topic]){const j=1+((Math.random()*(n-1))|0);[idx[0],idx[j]]=[idx[j],idx[0]];} // don't immediately repeat across reshuffles
+    qBag[topic]=idx;
+  }
+  const i=qBag[topic].shift(); qLast[topic]=i; return i;
+}
 function showQuiz(){
   state='question'; hud.classList.add('hidden'); quizEl.classList.remove('hidden'); totalEl.classList.remove('hidden');
-  const t=T[lang]; const bank=QBANK[current][lang]; const item=bank[qIndex[current]%bank.length]; qIndex[current]++;
+  const t=T[lang]; const bank=QBANK[current][lang]; const item=bank[nextQuestion(current, bank.length)];
   document.getElementById('quizTag').textContent=t.levelClear;
   document.getElementById('starline').textContent=t.collected(score);
   document.getElementById('question').textContent=item.q;
   const wrap=document.getElementById('answers'); wrap.innerHTML='';
-  item.a.forEach(([txt,ok])=>{const b=document.createElement('button');b.className='qbtn';b.textContent=txt;b.addEventListener('click',()=>answer(b,ok,item));wrap.appendChild(b);});
+  const opts=item.a.slice(); for(let i=opts.length-1;i>0;i--){const j=(Math.random()*(i+1))|0;[opts[i],opts[j]]=[opts[j],opts[i]];}
+  opts.forEach(([txt,ok])=>{const b=document.createElement('button');b.className='qbtn';b.textContent=txt;b.addEventListener('click',()=>answer(b,ok,item));wrap.appendChild(b);});
   const fb=document.getElementById('feedback'); fb.className='hidden'; fb.innerHTML='';
   document.getElementById('again').classList.add('hidden'); document.getElementById('toMenu').classList.add('hidden');
 }
 function answer(btn,ok,item){
   const t=T[lang]; const correctText=item.a.find(x=>x[1]===1)[0];
-  document.querySelectorAll('#answers .qbtn').forEach(b=>{b.disabled=true;if(b.textContent===correctText)b.classList.add('correct');});
-  if(!ok)btn.classList.add('wrong');
-  const earned=score+(ok?10:0); totalPoints+=earned; savePoints(); updateTotal();
+  document.getElementById('answers').innerHTML='';        // remove the options once answered
+  const earned=score+(ok?10:0); totalPoints+=earned; savePoints(); syncScore(earned); updateTotal();
   const fb=document.getElementById('feedback'); fb.classList.remove('hidden');
   fb.className=ok?'good':'bad';
   if(ok)sparkleBurst();
-  const head=ok?t.yes:t.notQuite(correctText);
-  fb.innerHTML='<span class="big">'+head+'</span>'+item.why+'<div class="pts">'+t.made(earned)+'</div>';
+  fb.innerHTML='<span class="big">'+(ok?t.yes:t.oops)+'</span>'
+    +'<div class="why">'+item.why+'</div>'
+    +'<div class="pts">'+t.made(earned)+'</div>';
   document.getElementById('again').classList.remove('hidden'); document.getElementById('toMenu').classList.remove('hidden');
 }
 
@@ -863,14 +966,19 @@ function applyLang(l){
   document.getElementById('kick').textContent=t.pick;
   document.querySelectorAll('#topicSeg button').forEach(b=>{b.querySelector('.lbl').textContent=t.topics[b.dataset.t].name;});
   startBtn.textContent=t.start;
+  document.getElementById('playBtn').textContent=t.play;
+  nameInput.placeholder=t.namePh;
   document.getElementById('again').textContent=t.again;
   document.getElementById('toMenu').textContent=t.change;
+  document.getElementById('pauseTitle').textContent=t.paused;
+  document.getElementById('resumeBtn').textContent=t.resume;
+  document.getElementById('quitBtn').textContent=t.quit;
   document.getElementById('quizTag').textContent=t.levelClear;
   document.querySelectorAll('#langtog button').forEach(b=>{const on=b.dataset.l===l;b.classList.toggle('on',on);b.setAttribute('aria-pressed',on?'true':'false');});
   moveKnob(langtogEl); moveKnob(topicSeg); layoutMenuHead();
   document.documentElement.lang=l;
   updateTotal();
-  if(state==='menu')applyTopic(current);
+  if(state==='menu'||state==='intro')applyTopic(current);
 }
 
 /* ===== Input (play only) ===== */
@@ -888,6 +996,48 @@ startBtn.addEventListener('click',()=>startGame('normal'));
 document.querySelectorAll('#langtog button').forEach(b=>b.addEventListener('click',()=>applyLang(b.dataset.l)));
 document.getElementById('again').addEventListener('click',()=>{level++;startGame(mode);});
 document.getElementById('toMenu').addEventListener('click',showMenu);
+
+/* ===== Pause ===== */
+const pauseMenuEl=document.getElementById('pauseMenu');
+function pauseGame(){if(state!=='play')return;state='paused';pauseMenuEl.classList.remove('hidden');}
+function resumeGame(){if(state!=='paused')return;state='play';pauseMenuEl.classList.add('hidden');}
+document.getElementById('pauseBtn').addEventListener('click',pauseGame);
+document.getElementById('resumeBtn').addEventListener('click',resumeGame);
+document.getElementById('quitBtn').addEventListener('click',()=>{pauseMenuEl.classList.add('hidden');showMenu();});
+addEventListener('keydown',e=>{const k=e.key.toLowerCase();if(k==='escape'||k==='p'){if(state==='play'){e.preventDefault();pauseGame();}else if(state==='paused'){e.preventDefault();resumeGame();}}});
+
+/* ===== Intro / login ===== */
+function setFeedback(msg,kind){const el=document.getElementById('nameFeedback');el.textContent=msg||'';el.className=kind||'';}
+function jsonp(url,ok,fail){
+  const cb='l2f_cb_'+Math.random().toString(36).slice(2); let done=false;
+  const s=document.createElement('script');
+  window[cb]=function(d){done=true;try{ok(d);}finally{try{delete window[cb];}catch(e){}s.remove();}};
+  s.onerror=function(){if(!done){try{delete window[cb];}catch(e){}s.remove();fail&&fail();}};
+  s.src=url+(url.indexOf('?')>=0?'&':'?')+'callback='+cb;
+  setTimeout(function(){if(!done){try{delete window[cb];}catch(e){}s.remove();fail&&fail();}},6000);
+  document.head.appendChild(s);
+}
+function enterAs(name){
+  username=name; try{localStorage.setItem('l2f_user',username);}catch(e){}
+  totalPoints=loadUserPoints(username); updateTotal(); syncScore(0);
+  setFeedback('',''); showMenu();
+}
+let checkingName=false;
+function submitName(){
+  if(checkingName)return;
+  const v=(nameInput.value||'').trim().replace(/\s+/g,' ').slice(0,16);
+  if(!v){ setFeedback(T[lang].needName,'warn'); return; }
+  if(v in allScores()){ enterAs(v); return; }            // used on this device before -> it's you, welcome back
+  if(!SHEET_URL){ enterAs(v); return; }                  // no sheet configured -> can't check, just play
+  checkingName=true; setFeedback(T[lang].checking,'');
+  jsonp(SHEET_URL+'?check='+encodeURIComponent(v),
+    function(res){ checkingName=false; if(res && res.taken){ setFeedback(T[lang].taken,'bad'); } else { enterAs(v); } },
+    function(){ checkingName=false; enterAs(v); });        // check failed -> don't block play
+}
+document.getElementById('playBtn').addEventListener('click',submitName);
+nameInput.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();submitName();}});
+nameInput.addEventListener('input',()=>setFeedback('',''));
+try{const saved=localStorage.getItem('l2f_user'); if(saved)nameInput.value=saved;}catch(e){}
 
 /* ===== Loop ===== */
 const clock=new THREE.Clock(); let t=0;
@@ -915,7 +1065,7 @@ function updatePlay(dt){
 function tick(){
   requestAnimationFrame(tick); const dt=Math.min(clock.getDelta(),0.033); t+=dt;
   points.rotation.y+=0.0005;
-  if(state==='menu'||state==='difficulty'){
+  if(state==='menu'||state==='difficulty'||state==='intro'){
     camera.position.set(Math.sin(t*0.2)*0.9,1.5,6.4); camera.lookAt(0,0.5,-0.5);
     const c=menuChars[current]; if(c&&c.userData.update)c.userData.update(t);
     if(menuProps[current]&&menuProps[current].visible){menuProps[current].children.forEach(o=>{if(o.userData&&o.userData.sp){o.position.y+=Math.sin(t*o.userData.sp+o.position.x)*0.003;o.rotation.y+=0.01;}});}
@@ -926,7 +1076,7 @@ function tick(){
   }
   renderer.render(scene,camera);
 }
-applyLang('es'); showMenu(); tick();
+applyLang('es'); applyTopic(current); tick();
 requestAnimationFrame(()=>{moveKnob(langtogEl);moveKnob(topicSeg);layoutMenuHead();});   // settle after fonts/layout
 addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight);moveKnob(langtogEl);moveKnob(topicSeg);layoutMenuHead();});
 </script>

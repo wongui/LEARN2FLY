@@ -1,46 +1,74 @@
-# Learn 2 Fly 🐟✨
+# Learn 2 Fly 🎮
 
-Juego para niños: vuela por 3 mundos (Arte, Espacio, Biología), junta estrellas y responde preguntas. En español e inglés.
+Juego educativo para niños: vuela por 3 mundos (🐟 Biología, 🤖 Espacio, 🦋 Arte),
+junta estrellas y responde preguntas para pasar de nivel. En español e inglés.
 
-## Archivos
+Es un solo archivo (`index.html`) — no necesita servidor ni compilación.
+(Carga Three.js desde internet, así que el dispositivo necesita conexión al abrirlo.)
 
-| Archivo | Para qué |
-|---|---|
-| `index.html` | El juego completo |
-| `og-image.png` | Imagen de preview al compartir el link (WhatsApp, etc.) |
-| `favicon.svg` / `favicon.png` | Ícono de la pestaña |
-| `apple-touch-icon.png` | Ícono al "Agregar a inicio" en iPhone |
-| `icon-192.png` / `icon-512.png` + `manifest.json` | Instalación como app |
+## Contenido de esta carpeta
+- `index.html` — el juego.
+- `og-image.png` — imagen para compartir (WhatsApp / redes).
+- `favicon.png`, `apple-touch-icon.png`, `icon-192.png`, `icon-512.png` — íconos.
+- `manifest.json` — para "Agregar a inicio" (PWA).
+- `google-apps-script.gs` — el código del Sheet (ver más abajo). No se sube a la web.
 
-> El juego carga el motor 3D (three.js) desde internet, así que **necesita conexión** al abrirse. No hay que compilar nada: son archivos estáticos.
+---
 
-## Publicar en GitHub Pages (gratis)
+## 1) Publicar en GitHub Pages
+1. Crea un repositorio (por ejemplo `learn2fly`) y sube todos los archivos de esta carpeta.
+2. En el repo: **Settings → Pages → Branch: main → /(root) → Save**.
+3. En 1–2 minutos queda en `https://TUUSUARIO.github.io/learn2fly/`.
+4. **Importante para la miniatura de WhatsApp:** abre `index.html` y reemplaza las
+   **3** apariciones de `USUARIO` por tu usuario real de GitHub (en las etiquetas
+   `og:url`, `og:image` y `twitter:image`). Sin esto, WhatsApp no carga la imagen.
 
-1. Crea un repositorio nuevo en GitHub (por ejemplo `learn2fly`).
-2. Sube **todos** estos archivos a la raíz del repo (arrastrar y soltar en la web de GitHub sirve).
-3. Ve a **Settings → Pages**.
-4. En *Branch* elige `main` y carpeta `/ (root)`. Guarda.
-5. En 1–2 minutos tu juego estará en:
-   `https://TU-USUARIO.github.io/learn2fly/`
+---
 
-## ⚠️ Importante para que el preview de WhatsApp salga con imagen
+## 2) Conectar el Google Sheet (estrellas acumuladas + verificar nombres)
 
-WhatsApp necesita la URL **completa** de la imagen. Abre `index.html` y reemplaza `USUARIO` (aparece 3 veces) por tu usuario real de GitHub — o pega tu dominio si usas otro:
+Esto sirve para dos cosas:
+- **Acumular estrellas por nombre** entre dispositivos (rating global).
+- **Verificar si un nombre ya existe** cuando alguien presiona "Jugar"
+  (muestra "disponible" o "ese nombre ya existe").
 
-```html
-<meta property="og:url"   content="https://TU-USUARIO.github.io/learn2fly/"/>
-<meta property="og:image" content="https://TU-USUARIO.github.io/learn2fly/og-image.png"/>
-<meta name="twitter:image" content="https://TU-USUARIO.github.io/learn2fly/og-image.png"/>
-```
+> Sin este paso el juego funciona igual: las estrellas se acumulan localmente en
+> cada dispositivo, pero no hay rating global ni verificación de nombres.
 
-Después de publicar, si compartes el link y no aparece la imagen (WhatsApp guarda en caché),
-refréscalo pegando la URL en https://developers.facebook.com/tools/debug/ y dando "Scrape Again".
+### Pasos (una sola vez)
+1. Crea una **Google Sheet** nueva (en blanco).
+2. Menú **Extensiones → Apps Script**.
+3. Borra el código que aparece y **pega todo el contenido de `google-apps-script.gs`**. Guarda.
+4. Arriba a la derecha: **Implementar → Nueva implementación**.
+   - Tipo: **Aplicación web**.
+   - **Ejecutar como:** Yo.
+   - **Quién tiene acceso:** **Cualquiera**  ← importante, si no, no funciona.
+   - Implementar, autoriza los permisos, y **copia la URL** (termina en `/exec`).
+5. Abre `index.html`, busca esta línea (cerca del inicio del `<script>`):
+   ```js
+   const SHEET_URL='';
+   ```
+   y pega tu URL entre las comillas:
+   ```js
+   const SHEET_URL='https://script.google.com/macros/s/AKfyc.../exec';
+   ```
+6. Sube el `index.html` actualizado. ¡Listo!
 
-## Tip para iPhone
+### Cómo se comporta la verificación de nombres
+- Nombre **libre** → entras directo.
+- Nombre **ocupado** en el Sheet → aviso "Ese nombre ya existe, prueba otro" (no entra).
+- Nombre que **ya usaste en ESE dispositivo** → te reconoce y entra directo
+  (bienvenido de vuelta; tus estrellas se siguen sumando).
+- Campo vacío → "Escribe un nombre primero".
 
-Para la mejor experiencia sin gestos del navegador, sugiere a los usuarios usar
-**Compartir → Agregar a inicio**. Así abre en pantalla completa como una app.
+### Qué guarda el Sheet
+Una hoja llamada **Scores** con: `Nombre | Estrellas | Última vez`.
+Cada partida **suma** las estrellas ganadas a la fila de ese nombre.
+Para ver el ranking, ordena la columna *Estrellas* de mayor a menor
+(o abre la URL `/exec` en el navegador para ver el top 20 en JSON).
 
-## Cambiar el nombre
-
-Está como "Learn 2 Fly". Para cambiarlo, reemplázalo en `index.html` (etiquetas `<title>` y las `og:`/`twitter:`) y en `manifest.json`.
+### Nota técnica
+El juego **escribe** al Sheet sin problema. La **lectura** para verificar nombres
+usa JSONP (por eso el paso de "Quién tiene acceso: Cualquiera" es obligatorio).
+Si algún día quieres mostrar el ranking dentro del juego, se puede agregar con el
+mismo script (`doGet` ya devuelve el top 20).
